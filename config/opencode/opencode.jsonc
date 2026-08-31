@@ -17,7 +17,8 @@
     "webfetch": "deny",
     "websearch": "deny",
     "skill": {
-      "*": "ask"
+      "*": "ask",
+      "progressive-context-design": "allow"
     },
     "bash": {
       "*": "ask",
