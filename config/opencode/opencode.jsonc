@@ -1,0 +1,260 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Shared behavior only. Provider definitions, default models, and per-agent
+  // model assignments belong in a machine-specific OPENCODE_CONFIG overlay.
+  // This keeps the public agent contract reusable across machines and accounts.
+  "snapshot": false,
+  "share": "disabled",
+
+  // Restrictive baseline. Individual agents reopen only the capabilities their
+  // role requires. Repository publication remains an explicit user operation.
+  "permission": {
+    "edit": "deny",
+    "task": {
+      "*": "deny"
+    },
+    "webfetch": "deny",
+    "websearch": "deny",
+    "skill": {
+      "*": "ask"
+    },
+    "bash": {
+      "*": "ask",
+      "*git*push*": "deny",
+      "*git*send-pack*": "deny",
+      "*repo*upload*": "deny"
+    }
+  },
+
+  "agent": {
+    // The build agent owns planning and orchestration, so the built-in plan
+    // agent is intentionally disabled.
+    "plan": {
+      "disable": true
+    },
+
+    "title": {
+      "temperature": 0.1,
+      "prompt": "{file:./prompts/title.md}"
+    },
+
+    "build": {
+      "mode": "primary",
+      "temperature": 0.1,
+      "steps": 256,
+      "prompt": "{file:./prompts/build.md}",
+      "permission": {
+        "edit": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": {
+          "*": "ask",
+          "generalL": "allow",
+          "general": "allow",
+          "generalH": "allow",
+          "exploreL": "allow",
+          "explore": "allow",
+          "exploreH": "allow",
+          "scoutL": "allow",
+          "scout": "allow",
+          "scoutH": "allow",
+          "reviewL": "allow",
+          "review": "allow",
+          "reviewH": "allow",
+          "criticL": "allow",
+          "critic": "allow",
+          "criticH": "allow"
+        }
+      }
+    },
+
+    // Provider-portable reasoning policy:
+    // - reasoningEffort is consumed by OpenAI/Codex-style providers.
+    // - effort is consumed by Anthropic-style adaptive reasoning.
+    //
+    // These pass-through options intentionally coexist so changing an agent's
+    // backing model does not require redefining its reasoning tier. They are not
+    // a promise that every provider accepts every option: validate compatibility
+    // when adopting a new model/provider.
+    //
+    // Execution controls such as sandboxMode/approvalPolicy are provider-specific
+    // and belong with the machine profile/model assignment. Model-specific
+    // `thinking` configuration belongs with the provider/model definition too.
+
+    "generalL": {
+      "description": "L-tier coding/debug subagent for tiny, low-risk, reversible edits and simple local validation with clear evidence.",
+      "mode": "subagent",
+      "reasoningEffort": "low",
+      "effort": "low",
+      "temperature": 0.1,
+      "steps": 50,
+      "permission": {
+        "edit": "allow"
+      },
+      "prompt": "{file:./prompts/generalL.md}"
+    },
+
+    "general": {
+      "description": "Default mid-tier coding/debug subagent for normal scoped investigation, edits, tests, refactors, and bug fixes.",
+      "mode": "subagent",
+      "reasoningEffort": "medium",
+      "effort": "medium",
+      "temperature": 0.1,
+      "steps": 120,
+      "permission": {
+        "edit": "allow",
+        "webfetch": "allow",
+        "websearch": "allow"
+      },
+      "prompt": "{file:./prompts/general.md}"
+    },
+
+    "generalH": {
+      "description": "H-tier coding/debug subagent for complex, high-risk, large-repo, BSP/kernel/vendor SDK/Android/Buildroot/Yocto, or quality-critical work.",
+      "mode": "subagent",
+      "reasoningEffort": "high",
+      "effort": "high",
+      "temperature": 0.1,
+      "steps": 180,
+      "permission": {
+        "edit": "allow",
+        "webfetch": "allow",
+        "websearch": "allow"
+      },
+      "prompt": "{file:./prompts/generalH.md}"
+    },
+
+    "exploreL": {
+      "description": "L-tier read-only local exploration subagent for quick file, symbol, setting, command-output, or log lookup.",
+      "mode": "subagent",
+      "reasoningEffort": "low",
+      "effort": "low",
+      "temperature": 0.1,
+      "steps": 40,
+      "prompt": "{file:./prompts/exploreL.md}"
+    },
+
+    "explore": {
+      "description": "Default mid-tier read-only local exploration subagent for codebase tracing, dependency mapping, log review, and current-state checks.",
+      "mode": "subagent",
+      "reasoningEffort": "medium",
+      "effort": "medium",
+      "temperature": 0.1,
+      "steps": 80,
+      "prompt": "{file:./prompts/explore.md}"
+    },
+
+    "exploreH": {
+      "description": "H-tier read-only large-repo mapping subagent for BSP, kernel, vendor SDK, Android, Buildroot, Yocto, bootloader, and board-support work.",
+      "mode": "subagent",
+      "reasoningEffort": "high",
+      "effort": "high",
+      "temperature": 0.1,
+      "steps": 180,
+      "prompt": "{file:./prompts/exploreH.md}"
+    },
+
+    "scoutL": {
+      "description": "L-tier read-only scout subagent for quick external documentation, package metadata, release-note, or upstream reference checks.",
+      "mode": "subagent",
+      "reasoningEffort": "low",
+      "effort": "low",
+      "temperature": 0.1,
+      "steps": 45,
+      "permission": {
+        "webfetch": "allow",
+        "websearch": "allow"
+      },
+      "prompt": "{file:./prompts/scoutL.md}"
+    },
+
+    "scout": {
+      "description": "Default mid-tier read-only scout subagent for external docs, dependency source, upstream implementation research, and local cross-reference checks.",
+      "mode": "subagent",
+      "reasoningEffort": "medium",
+      "effort": "medium",
+      "temperature": 0.1,
+      "steps": 90,
+      "permission": {
+        "webfetch": "allow",
+        "websearch": "allow"
+      },
+      "prompt": "{file:./prompts/scout.md}"
+    },
+
+    "scoutH": {
+      "description": "H-tier read-only scout subagent for high-risk external dependency research, upstream source comparison, version/API conflicts, and multi-source evidence reconciliation.",
+      "mode": "subagent",
+      "reasoningEffort": "high",
+      "effort": "high",
+      "temperature": 0.1,
+      "steps": 150,
+      "permission": {
+        "webfetch": "allow",
+        "websearch": "allow"
+      },
+      "prompt": "{file:./prompts/scoutH.md}"
+    },
+
+    "reviewL": {
+      "description": "L-tier read-only review subagent for tiny diffs, simple config changes, and quick validation sanity checks.",
+      "mode": "subagent",
+      "reasoningEffort": "low",
+      "effort": "low",
+      "temperature": 0.1,
+      "steps": 35,
+      "prompt": "{file:./prompts/reviewL.md}"
+    },
+
+    "review": {
+      "description": "Default mid-tier read-only review subagent for normal diffs, validation results, and implementation risk checks.",
+      "mode": "subagent",
+      "reasoningEffort": "medium",
+      "effort": "medium",
+      "temperature": 0.1,
+      "steps": 60,
+      "prompt": "{file:./prompts/review.md}"
+    },
+
+    "reviewH": {
+      "description": "H-tier read-only review subagent for high-risk diffs, BSP/kernel/vendor SDK changes, large refactors, release-sensitive changes, and validation quality review.",
+      "mode": "subagent",
+      "reasoningEffort": "high",
+      "effort": "high",
+      "temperature": 0.1,
+      "steps": 100,
+      "prompt": "{file:./prompts/reviewH.md}"
+    },
+
+    "criticL": {
+      "description": "L-tier read-only critic for quick challenge of simple conclusions, assumptions, and final-report wording.",
+      "mode": "subagent",
+      "reasoningEffort": "low",
+      "effort": "low",
+      "temperature": 0.1,
+      "steps": 35,
+      "prompt": "{file:./prompts/criticL.md}"
+    },
+
+    "critic": {
+      "description": "Default mid-tier read-only critic for assumptions, weak conclusions, skipped scope, missing tests, and overstated completion.",
+      "mode": "subagent",
+      "reasoningEffort": "medium",
+      "effort": "medium",
+      "temperature": 0.1,
+      "steps": 70,
+      "prompt": "{file:./prompts/critic.md}"
+    },
+
+    "criticH": {
+      "description": "H-tier read-only critic for high-risk completion claims, multi-source evidence conflicts, BSP/kernel/vendor SDK work, and expensive-rework prevention.",
+      "mode": "subagent",
+      "reasoningEffort": "high",
+      "effort": "high",
+      "temperature": 0.1,
+      "steps": 110,
+      "prompt": "{file:./prompts/criticH.md}"
+    }
+  }
+}
