@@ -18,7 +18,8 @@
     "websearch": "deny",
     "skill": {
       "*": "ask",
-      "progressive-context-design": "allow"
+      "progressive-context-design": "allow",
+      "cross-ai-review": "deny"
     },
     "bash": {
       "*": "ask",
@@ -49,6 +50,9 @@
         "edit": "allow",
         "webfetch": "allow",
         "websearch": "allow",
+        "skill": {
+          "cross-ai-review": "allow"
+        },
         "task": {
           "*": "ask",
           "generalL": "allow",
