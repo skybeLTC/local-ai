@@ -21,7 +21,8 @@
       "progressive-context-design": "allow",
       "cross-ai-review": "deny",
       "coding": "allow",
-      "skill-creator": "deny"
+      "skill-creator": "deny",
+      "diagnosing-bugs": "deny"
     },
     "bash": {
       "*": "ask",
@@ -54,7 +55,8 @@
         "websearch": "allow",
         "skill": {
           "cross-ai-review": "allow",
-          "skill-creator": "ask"
+          "skill-creator": "ask",
+          "diagnosing-bugs": "allow"
         },
         "task": {
           "*": "ask",
@@ -113,7 +115,10 @@
       "permission": {
         "edit": "allow",
         "webfetch": "allow",
-        "websearch": "allow"
+        "websearch": "allow",
+        "skill": {
+          "diagnosing-bugs": "allow"
+        }
       },
       "prompt": "{file:./prompts/general.md}"
     },
@@ -128,7 +133,10 @@
       "permission": {
         "edit": "allow",
         "webfetch": "allow",
-        "websearch": "allow"
+        "websearch": "allow",
+        "skill": {
+          "diagnosing-bugs": "allow"
+        }
       },
       "prompt": "{file:./prompts/generalH.md}"
     },
