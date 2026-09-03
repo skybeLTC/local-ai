@@ -20,7 +20,8 @@
       "*": "ask",
       "progressive-context-design": "allow",
       "cross-ai-review": "deny",
-      "coding": "allow"
+      "coding": "allow",
+      "skill-creator": "deny"
     },
     "bash": {
       "*": "ask",
@@ -52,7 +53,8 @@
         "webfetch": "allow",
         "websearch": "allow",
         "skill": {
-          "cross-ai-review": "allow"
+          "cross-ai-review": "allow",
+          "skill-creator": "ask"
         },
         "task": {
           "*": "ask",
