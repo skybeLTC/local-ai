@@ -19,7 +19,8 @@
     "skill": {
       "*": "ask",
       "progressive-context-design": "allow",
-      "cross-ai-review": "deny"
+      "cross-ai-review": "deny",
+      "coding": "allow"
     },
     "bash": {
       "*": "ask",
