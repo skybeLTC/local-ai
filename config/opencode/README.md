@@ -22,6 +22,7 @@ Private profile 負責：
 - `model` / `small_model`
 - `agent.*.model`
 - 只有特定 provider/model 才應持有的 model-level or execution options
+- machine-specific/private skill source registration（`skills.paths`）與其 named skill permission，當 skill 本身不適合放在 public config 時
 
 Public config 不應包含 credential、account identifier、private endpoint 或 machine-specific model inventory。
 
