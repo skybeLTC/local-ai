@@ -26,6 +26,8 @@ Private profile 負責：
 
 Public config 不應包含 credential、account identifier、private endpoint 或 machine-specific model inventory。
 
+OpenCode config validation 使用 sibling `~/local-ai/opencode` checkout 產生的 version-matched schema；schema generation 與 maintenance contract 由 `~/local-ai/opencode/SKY_README.md` 維護。
+
 ## Shared versus provider-specific agent policy
 
 Agent tier 的 reasoning intent 屬於 shared role policy，所以 public config 同時保留：

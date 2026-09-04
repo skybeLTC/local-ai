@@ -1,5 +1,5 @@
 {
-  "$schema": "https://opencode.ai/config.json",
+  "$schema": "../../opencode/packages/opencode/dist/opencode.schema.json",
 
   // Shared behavior only. Provider definitions, default models, and per-agent
   // model assignments belong in a machine-specific OPENCODE_CONFIG overlay.
