@@ -22,7 +22,8 @@
       "cross-ai-review": "deny",
       "coding": "allow",
       "skill-creator": "deny",
-      "diagnosing-bugs": "deny"
+      "diagnosing-bugs": "deny",
+      "grilling": "deny"
     },
     "bash": {
       "*": "ask",
@@ -56,7 +57,8 @@
         "skill": {
           "cross-ai-review": "allow",
           "skill-creator": "ask",
-          "diagnosing-bugs": "allow"
+          "diagnosing-bugs": "allow",
+          "grilling": "allow"
         },
         "task": {
           "*": "ask",
