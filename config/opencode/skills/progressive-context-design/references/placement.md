@@ -2,6 +2,16 @@
 
 當你不知道一段資訊在 OpenCode-oriented repository 中應該放哪裡時，依序判斷。
 
+## README / AGENTS decision rule
+
+先依 execution-time necessity 與 authority 判斷，不依預期讀者是 human 還是 AI 判斷：
+
+- execution-time invariant、operational policy 或 safety boundary -> `AGENTS.md`
+- architecture、rationale、lifecycle、orientation 或 navigation -> `README.md` / focused maintenance guide
+- 兩者都需要 -> minimum actionable rule 放在 `AGENTS.md`，deeper explanation 放在 `README.md`；`AGENTS.md` 可以附上精確 pointer
+
+不要只是為了寫「Before modifying this subsystem, read README.md」而建立 `AGENTS.md`。如果實際 mandatory policy 唯一存在 README，這會形成 policy indirection；pointer 可以補充 deeper context，但不能取代 `AGENTS.md` 中執行時所需的最小 actionable rule。
+
 ## 1. Agent 執行時是否一定需要？
 
 如果是，把最低限度規則放進對應 runtime-loaded instruction：

@@ -2,6 +2,15 @@
 
 這個 repository 是本機 AI / OpenCode 環境的公開管理層。它保存可跨機器共用、可公開的設定與文件；OpenCode source fork 與 machine-specific private config 各自使用獨立 Git repository。
 
+## Documentation convention
+
+這個 repository 的 `README.md` 與 `AGENTS.md` 都是 AI-facing context，但責任不同，不以「human vs AI」區分。
+
+- `README.md` 是 AI-friendly、human-readable 的 documentation/context owner。由這個 repository 追蹤的 README prose 預設使用臺灣繁體中文；technical identifiers、paths、commands、code 與必要 technical terms 保留原樣。
+- `AGENTS.md` 是 agent execution policy。由這個 repository 追蹤的 AGENTS 預設使用英文，只保存執行時需要的 invariant、safety boundary、MUST / MUST NOT behavior 與精確 navigation。
+- 同一個 scope 可以同時有 README 與 AGENTS。Mandatory execution rule 的 minimum actionable form 必須存在 `AGENTS.md`；README 負責 deeper rationale、architecture、lifecycle 與 maintenance context。
+- 語言是這個 repository 的 writing convention，不決定 authority，也不改變 runtime-loading semantics。獨立 Git repository 仍遵循各自的 documentation / agent policy。
+
 ## Repository map
 
 ```text

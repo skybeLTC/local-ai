@@ -35,6 +35,8 @@ other automatically injected instructions
 
 Keep only execution-relevant behavior there. Move maintenance history, provenance, extended examples, and design explanation to README/reference files unless execution genuinely depends on them.
 
+Choose `README.md` versus `AGENTS.md` by execution-time necessity and authority, not by a human-versus-AI audience split. `README.md` may be both AI-friendly and human-readable; mandatory execution policy belongs in `AGENTS.md`.
+
 ## Authority test
 
 Before duplicating a rule, ask:

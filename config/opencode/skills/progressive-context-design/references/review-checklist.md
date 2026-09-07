@@ -13,6 +13,10 @@
 
 - 每條 active rule 是否只有一個清楚 authoritative owner？
 - 是否避免維護兩份完整、會獨立 drift 的 policy？
+- README/AGENTS placement 是否依 runtime necessity 與 authority，而不是 human-vs-AI audience？
+- README 在適當情況下是否同時 usable by agents and humans？
+- mandatory execution rule 是否沒有只藏在 README，再靠 AGENTS 的「read this first」indirection？
+- README/AGENTS overlap 時，是否一方擁有 rule，另一方只有 scoped summary/pointer 或 rationale？
 - current state 是否和 historical rationale 分開？
 
 ## Runtime context cost
