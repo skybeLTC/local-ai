@@ -18,13 +18,21 @@ skills/cross-ai-review/
 
 | 檔案 | OpenCode 是否載入 | 角色 |
 |---|---|---|
-| `SKILL.md` | 是，`skill` 工具觸發時載入 | runtime entry 與核心 cross-AI protocol authority |
-| `references/file-exchange.md` | 只有真的要交換檔案時 | `.tar.zst`、封裝範圍、security、reuse、handoff |
-| `references/review-checklist.md` | final implementation review / delivery / commit/deployment / closeout | final protocol checklist |
+| `SKILL.md` | 是，`skill` 工具觸發時載入 | runtime entry、核心 cross-AI protocol authority 與 mandatory handoff trigger |
+| `references/file-exchange.md` | handoff gate 命中或真的要交換檔案時 | `.tar.zst` handoff contract、封裝範圍、security、reuse、handoff mechanics |
+| `references/review-checklist.md` | final implementation review / delivery / commit/deployment / closeout | final protocol checklist 與 handoff completion gate |
 | `assets/web-prompt.md` | 否 | 給沒有安裝 native skill 的 Web AI 直接貼上使用的 portable fallback |
 | `assets/skill-review.zh-TW.md` | 否 | `SKILL.md` 的人工繁中 review 副本；不是 runtime authority |
 
 `SKILL.md` 與它明確引用的 `references/` 一起構成 OpenCode side 的 runtime contract。README 不重複維護 protocol detail。
+
+## Handoff contract rationale
+
+正式 implementation review 的 file handoff 不等同於「看過一段 patch」。Pasted diff、commit summary 或 `git show` output 只能呈現內容；當 peer AI 無法直接讀取 exact current files 或 commit 時，不能取代可獨立取得、解包與查核、且包含 exact current formal deliverables 的 `.tar.zst` handoff。這也是為什麼 required-exchange case 不能只靠「檔案已經 commit」的宣告結束。
+
+規則刻意是 conditional，而不是每一個 cross-AI turn 都產生 tar：只有 formal deliverable 被建立或變更、peer AI 必須做 implementation review、且 peer AI 沒有 exact current direct access 時，才需要新的/current archive。Peer AI 能直接 review exact current files 或 commit 時，direct-access exemption 是有效且較低成本的結果；但 final response 仍必須明確寫出 exemption 與原因，不能讓 handoff 狀態消失。
+
+mandatory trigger 放在 runtime-loaded `SKILL.md`，因為 agent 必須在決定結束 round 前就知道何時不能自行略過 handoff。archive format、reuse、security 與封裝細節則留在 `references/file-exchange.md`；`review-checklist.md` 在 closeout 強制檢查 archive 或 exemption。這樣能修正 omission failure mode，又不把完整 archive procedure 複製進每次 invocation 的 runtime context。
 
 ## 為什麼 `references/` 與 `assets/` 都存在
 

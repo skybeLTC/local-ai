@@ -76,9 +76,11 @@ Once implementation is done, report the actual change and verification evidence 
 
 Answer any question the peer AI asked. If a judgment, edit, or test needs a file, project fact, repo/git state, command output, log, build/test result, toolchain, or environment that is not available here, say exactly what the peer AI needs to supply or run — do not just ask vaguely for "more information", and do not accept "done" or "tests passed" claims from the peer as sufficient evidence on their own. If a formal change can only be made reliably in an environment the peer AI controls, say so plainly instead of pretending it is already implemented; state the agreed direction and the remaining work. This is an environment handoff, not a reason to reopen an already-settled judgment.
 
-## File exchange
+## File-exchange gate
 
-When this task needs files exchanged with the peer AI, read `references/file-exchange.md` before packaging or requesting the handoff. Follow that reference for archive format, contents, timing, paths, reuse, security, and the user-facing relay.
+- Every formal implementation-review round must end with either a verified current `.tar.zst` handoff or an explicit direct-access exemption; never leave the handoff status implicit.
+- A current file handoff is required when this round creates or changes a formal deliverable that the peer AI must implementation-review and the peer AI does not have direct access to the exact current files or exact current commit. Before ending that round, read `references/file-exchange.md` and produce the required handoff.
+- A pasted diff, commit summary, `git show` output, or claim that files are committed does not replace a required archive. If direct access makes an archive unnecessary, state that exemption and its reason explicitly in the final response.
 
 ## Before declaring the cross-AI task complete
 

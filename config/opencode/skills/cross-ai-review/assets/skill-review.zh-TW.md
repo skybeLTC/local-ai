@@ -86,9 +86,12 @@ Review 一項 artifact,不代表取得修改它的授權。
 
 回答 peer AI 提出的任何問題。如果某個判斷、修改或測試,需要目前這裡拿不到的檔案、專案事實、repo/git 狀態、指令輸出、log、build/test 結果、工具鏈或執行環境,具體說明需要 peer AI 提供或執行什麼——不要只是籠統要求「更多資訊」,也不要把 peer 自稱的「完成」或「測試通過」當成足夠的證據。如果正式修改只能在 peer AI 能可靠取得的環境中完成,就老實說清楚,不要假裝已經實作;說明已經形成共識的方向,以及剩下要做的工作。這是環境交接,不代表既有共識需要重新 review。
 
-## 檔案交換
+## 檔案交換 gate
 
-當這項 cross-AI task 真的需要和 peer AI 交換檔案時，先讀 `../references/file-exchange.md`，再依其中的 archive format、封裝範圍、timing、path、reuse、security 與 user-facing handoff 規則執行。
+- 每一個 formal implementation-review round 最後都必須明確得到 verified current `.tar.zst` handoff，或 explicit direct-access exemption；handoff status 不得 silent。
+- 如果本輪建立或修改 formal deliverable、peer AI 必須對它做 implementation review、且 peer AI 無法直接存取 exact current files 或 exact current commit，就必須先讀 `../references/file-exchange.md` 並產生 current handoff。
+- 需要 archive 時，貼上的 `git diff`／diff、`git show` output、commit summary，或「檔案已經 committed」的說法，都不能取代 required `.tar.zst`。
+- 如果 direct access 使 archive 不需要產生，final response 必須明確說明這個 exemption 以及原因；不能讓 handoff status 保持 silent。
 
 ## 宣告 cross-AI task 完成前
 

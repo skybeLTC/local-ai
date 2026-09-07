@@ -44,7 +44,19 @@ OpenCode 不會載入、解析或執行這個檔案。
 
 如果另一個 AI 有問問題,請回答。若判斷、修改或測試需要目前無法取得的檔案、專案資訊、repo 或 git 狀態、指令輸出、log、build、測試結果、工具鏈或執行環境,請具體說明需要另一個 AI 提供或執行什麼,不要只籠統要求更多資訊,也不要把「已完成」或「測試通過」當成足夠證據。若正式修改只能在另一個 AI 能可靠取得的環境中完成,不要假裝已經實作;清楚說明已形成共識的方向與需要完成的工作。這是 environment handoff,不代表既有共識需要再次 review。
 
-所有檔案交換一律使用 `.tar.zst`。本輪為完成工作、正式修改、正式交付或提供必要 review 證據而新增或修改的檔案要封裝;另一個 AI 明確要求的檔案即使本輪未修改,也要依需求封裝。純調查、build 或 test 自動產生,而且未被要求、無須交付、不是正式實作必須更新的檔案,也不是必要 review 證據的 cache、temporary files 或 generated garbage 不要封裝;generated artifact 若是正式交付、正式實作需要更新、必要證據或被明確要求,仍要納入。
+正式 implementation-review round 的 handoff gate 如下：
+
+- 每一個 formal implementation-review round 最後都必須是 verified current `.tar.zst` handoff，或 explicit direct-access exemption；final response 不得對 handoff status silent。
+- 如果本輪建立或修改 formal deliverable、peer AI 必須對它做 implementation review、且 peer AI 無法直接存取 exact current files 或 exact current commit，就必須產生 current `.tar.zst`。
+- 在 required-exchange case，pasted diff、`git diff`、commit summary、`git show` output、commit hash，或「檔案已經 committed」的說法，都不能取代 `.tar.zst`。
+- 如果 peer 確實可以直接 access 並 review exact current files 或 exact current commit，archive 可以不產生；但 final response 必須明確寫出：
+  ```text
+  Handoff archive: not required
+  Reason: <why the peer has exact current direct access>
+  ```
+- diagnosis/remediation-only round 尚未有 formal implementation 時，不需要新的 archive。已有 archive 若包含 exact unchanged current formal deliverables，可以 reuse；但 formal deliverable 在 archive 建立後有任何變更，舊 archive 就是 stale，必須重新產生 current archive。
+
+需要 file exchange 時一律使用 `.tar.zst`。如果環境不能可靠產生 `.tar.zst`，要明確說明 blocker，不要靜默替換格式。本輪為完成工作、正式修改、正式交付或提供必要 review 證據而新增或修改的檔案要封裝;另一個 AI 明確要求的檔案即使本輪未修改,也要依需求封裝。純調查、build 或 test 自動產生,而且未被要求、無須交付、不是正式實作必須更新的檔案,也不是必要 review 證據的 cache、temporary files 或 generated garbage 不要封裝;generated artifact 若是正式交付、正式實作需要更新、必要證據或被明確要求,仍要納入。
 
 請先完成本輪依照上述規則能合理完成的工作,再交換檔案,不要在處理途中要求我轉交已修改檔案。封裝時保留必要相對路徑;若目前能存取工作區,將 `.tar.zst` 放在工作區根目錄,否則集中提供下載,並在回答最後提醒我要傳給另一個 AI review,同一句提醒要直接寫出實際檔名或路徑,不要只靠我往上翻才找得到是哪一份。如果我已提供另一個 AI 傳來的 archive,請直接使用;除非內容更新、另一個 AI 重新要求或本輪產生新修改,否則不要要求重傳同一份 `.tar.zst`。
 

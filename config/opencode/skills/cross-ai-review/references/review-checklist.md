@@ -46,6 +46,14 @@ This file is a conditional runtime extension of `../SKILL.md`. It turns the exis
 
 If files must be exchanged, read `file-exchange.md` and confirm its archive, path, security, reuse, and handoff rules were followed.
 
+## Handoff completion gate
+
+- If formal deliverables changed and the peer AI lacks direct access, was a current `.tar.zst` actually created, or was an existing archive verified to contain the unchanged current deliverables?
+- Was the archive verified as readable and matched to the current formal deliverables?
+- Does the final response give the exact archive path, SHA256, and relevant entry list or other precise handoff evidence?
+- If direct access makes an archive unnecessary, does the final response explicitly say the handoff archive is not required and give the reason?
+- Is the handoff status non-silent? A pasted diff, commit summary, `git show` output, commit hash, or claim that files are committed cannot satisfy a required exchange.
+
 ## Completion
 
 Treat the cross-AI implementation workflow as complete only when all of the following are true:

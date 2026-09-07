@@ -1,8 +1,25 @@
 # Cross-AI File Exchange
 
-Read this only when the current cross-AI task actually needs files exchanged with the peer AI.
+Read this when the `SKILL.md` file-exchange gate requires a handoff, or when the current cross-AI task otherwise needs files exchanged with the peer AI.
 
-This file is a conditional runtime extension of `../SKILL.md`.
+This file is the authoritative conditional runtime extension of `../SKILL.md` for handoff semantics and archive mechanics.
+
+## When exchange is required
+
+Create or update a current `.tar.zst` handoff before ending a round when all of the following are true:
+
+- this round creates or changes a named formal deliverable;
+- the peer AI must implementation-review that deliverable; and
+- the peer AI cannot directly access the exact current files or exact current commit.
+
+The following cases do not require a new archive:
+
+- the round is diagnosis/remediation discussion only and formal implementation has not started;
+- the peer AI can directly access and review the exact current files or commit (the direct-access exemption);
+- the peer AI already has an archive containing the exact current formal deliverables, and no formal deliverable changed after it was produced; or
+- only explanations, logs, or other evidence changed while the formal deliverables remained unchanged.
+
+When using the direct-access exemption, state it explicitly in the final response with the reason. If a required exchange applies, a pasted diff, commit summary, `git show` output, commit hash, or claim that the files exist in Git is not a substitute for the `.tar.zst` handoff. Those items may accompany the archive or the explicit exemption.
 
 ## Archive format
 
