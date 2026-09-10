@@ -1,0 +1,9 @@
+{
+  "$schema": "https://opencode.ai/tui.json",
+
+  // OpenCode v1 loads TUI plugins from tui.json/tui.jsonc separately from the
+  // server plugin list in opencode.jsonc.
+  "plugin": [
+    "{env:HOME}/local-ai/opencode-satellites/opencode-quota"
+  ]
+}

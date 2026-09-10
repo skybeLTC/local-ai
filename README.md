@@ -22,13 +22,16 @@
 │       ├── README.md
 │       ├── AGENTS.md
 │       ├── opencode.jsonc
+│       ├── tui.jsonc
 │       ├── prompts/
 │       └── skills/                    # present as skills are adopted
+├── opencode-satellites/
+│   └── README.md               # satellite layout invariant; child dirs are independent repositories
 ├── opencode/                   # independent OpenCode source repository
 └── private/                    # independent private configuration repository
 ```
 
-Root Git 以 `.gitignore` 排除 `/opencode/` 與 `/private/`。這兩個目錄不是 root repository 的 vendored content，也不應被 root commit 吸收。
+Root Git 以 `.gitignore` 排除 `/opencode/`、`/private/` 與 `/opencode-satellites/` 下除 `README.md` 以外的所有內容。這些目錄不是 root repository 的 vendored content，也不應被 root commit 吸收。
 
 ## Responsibility map
 
@@ -36,6 +39,7 @@ Root Git 以 `.gitignore` 排除 `/opencode/` 與 `/private/`。這兩個目錄�
 - `config/opencode/AGENTS.md`：所有 OpenCode primary/subagent 都需要的 global runtime rules。
 - `config/opencode/prompts/`：各 agent 的 role-specific runtime contract。
 - `config/opencode/skills/`（存在時）：可公開的 OpenCode skills；每個 skill 由自己的 `SKILL.md` 與 supporting documentation 負責。
+- `opencode-satellites/`：OpenCode 周邊工具的 source checkout 集合。Root repository 只擁有 `opencode-satellites/README.md` 描述的 layout invariant 與 ignore rule；每個子目錄都是獨立 Git repository，其 branch、build、release 與 publication policy 由該 repository 自己負責。
 - `opencode/`：OpenCode source/release maintenance repository。Source fork 的 branch、build、release 與 publication policy 不由這個 root repository 管理。
 - `private/`：machine-specific provider/model profile 與其他不公開設定。Public repository 只描述它的 interface，不記錄實際 private mapping。
 
@@ -69,4 +73,5 @@ Private repository 是 visibility boundary，不是 credential store。
 - 修改 agent runtime behavior：再讀對應的 `config/opencode/AGENTS.md` 或 `config/opencode/prompts/*.md`。
 - 修改某個 skill：從該 skill 的 `SKILL.md` 開始，只在需要時沿著其 references 深入。
 - 修改 OpenCode source fork：進入 `opencode/` 後使用該 repository 自己的 maintenance documentation。
+- 新增或修改 satellite checkout：先讀 `opencode-satellites/README.md`，再進入該 satellite repository 使用它自己的 maintenance documentation。
 - 修改 private profile：進入 `private/` 後使用該 repository 自己的 README / AGENTS 規則。

@@ -1,2 +1,4 @@
 /opencode/
 /private/
+/opencode-satellites/*
+!/opencode-satellites/README.md

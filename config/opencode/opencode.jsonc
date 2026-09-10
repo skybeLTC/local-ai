@@ -7,6 +7,50 @@
   "snapshot": false,
   "share": "disabled",
 
+  // The quota plugin is a locally managed satellite checkout. Server loading
+  // uses the package's main entrypoint; TUI loading is registered separately in
+  // tui.jsonc because OpenCode keeps the two plugin targets exclusive.
+  "plugin": [
+    "{env:HOME}/local-ai/opencode-satellites/opencode-quota"
+  ],
+
+  // Plugin-specific settings stay under experimental so the strict OpenCode
+  // config schema can load the shared file. The quota plugin reads this
+  // container from the layered config files and applies these common defaults.
+  "experimental": {
+    "quotaToast": {
+      "onlyCurrentModel": false,
+      "formatStyle": "allWindows",
+      "percentDisplayMode": "remaining",
+      "tuiCommandDisplay": "dialog",
+      "enableToast": false,
+      "tuiSidebarPanel": {
+        "enabled": true
+      },
+      "tuiCompactStatus": {
+        "enabled": false
+      },
+      "showSessionTokens": true,
+      "sessionTokenScope": "current",
+      "tuiPromptBar": {
+        "enabled": false
+      },
+      "resetNotifications": {
+        "enabled": false
+      },
+      "maintainerAnnouncements": {
+        "enabled": false
+      },
+      "telemetry": {
+        "enabled": false
+      },
+      "pricingSnapshot": {
+        "source": "auto",
+        "autoRefresh": 7
+      }
+    }
+  },
+
   // Restrictive baseline. Individual agents reopen only the capabilities their
   // role requires. Repository publication remains an explicit user operation.
   "permission": {

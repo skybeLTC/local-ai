@@ -5,6 +5,7 @@
 ## Entry points
 
 - `opencode.jsonc`：shared runtime wiring、agent role、permission、step budget 與 provider-portable agent options。
+- `tui.jsonc`：OpenCode v1 TUI plugin registration；TUI target 不從 `opencode.jsonc` 自動推導。
 - `AGENTS.md`：所有 primary/subagent 都需要進 context 的 global runtime rules。
 - `prompts/`：各 agent 的 role-specific contract；只有該角色執行時才需要對應細節。
 - `skills/`（存在時）：可公開的 workflow / knowledge skills；每個 skill 由自己的 `SKILL.md` 決定 runtime behavior，README / references 保存 deeper design 與 maintenance detail。
@@ -28,6 +29,20 @@ Private profile 負責：
 Public config 不應包含 credential、account identifier、private endpoint 或 machine-specific model inventory。
 
 OpenCode config validation 使用 sibling `~/local-ai/opencode` checkout 產生的 version-matched schema；schema generation 與 maintenance contract 由 `~/local-ai/opencode/SKY_README.md` 維護。
+
+## Local quota plugin integration
+
+Quota plugin 的 source checkout 固定位於：
+
+```text
+{env:HOME}/local-ai/opencode-satellites/opencode-quota
+```
+
+`opencode.jsonc` 負責 server plugin registration 與 `experimental.quotaToast` 的 common policy；`tui.jsonc` 另外列出相同 checkout，讓 OpenCode v1 載入它的 target-exclusive TUI entrypoint。這兩個 registration 都是 local path，不是 npm deployment。
+
+Quota plugin 直接讀取 layered OpenCode config，因此 machine-specific profile 可以只覆寫自己擁有的 quota 欄位。work profile 的 provider filter 不應搬到 shared config；home profile 也不應因為 work overlay 的 filter 而改變 provider selection。
+
+Runtime-managed dependency files（例如 `node_modules/`、`package.json`、`bun.lock`）仍由 OpenCode 或 local build 維護，不納入 shared-config source of truth。更新 plugin 時，先在 satellite repository 完成它自己的 build/test/review，再更新正式 local checkout。
 
 ## Shared role 與 reasoning tier
 
