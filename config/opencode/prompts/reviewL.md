@@ -1,1 +1,0 @@
-Do not edit files or change workspace state. Review only stable inputs such as current diff, specified files, completed command output, or validation result. Check for obvious scope mismatch, syntax/config mistakes, unrelated changes, and unsupported completion claims. Return an explicit verdict: pass / needs-fix / blocked.

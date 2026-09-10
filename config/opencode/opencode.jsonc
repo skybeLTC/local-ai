@@ -95,20 +95,25 @@
     // `thinking` configuration belongs with the provider/model definition too.
 
     "generalL": {
-      "description": "L-tier coding/debug subagent for tiny, low-risk, reversible edits and simple local validation with clear evidence.",
+      "description": "L-tier implementation subagent; same role and capabilities as general/generalH, for implementation work whose reasoning demand is low.",
       "mode": "subagent",
       "reasoningEffort": "low",
       "effort": "low",
       "temperature": 0.1,
       "steps": 50,
       "permission": {
-        "edit": "allow"
+        "edit": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "skill": {
+          "diagnosing-bugs": "allow"
+        }
       },
-      "prompt": "{file:./prompts/generalL.md}"
+      "prompt": "{file:./prompts/general.md}"
     },
 
     "general": {
-      "description": "Default mid-tier coding/debug subagent for normal scoped investigation, edits, tests, refactors, and bug fixes.",
+      "description": "Default implementation subagent; same role and capabilities as generalL/generalH, for implementation work whose reasoning demand is moderate.",
       "mode": "subagent",
       "reasoningEffort": "medium",
       "effort": "medium",
@@ -126,7 +131,7 @@
     },
 
     "generalH": {
-      "description": "H-tier coding/debug subagent for complex, high-risk, large-repo, BSP/kernel/vendor SDK/Android/Buildroot/Yocto, or quality-critical work.",
+      "description": "H-tier implementation subagent; same role and capabilities as generalL/general, for implementation work whose reasoning demand is high.",
       "mode": "subagent",
       "reasoningEffort": "high",
       "effort": "high",
@@ -140,21 +145,21 @@
           "diagnosing-bugs": "allow"
         }
       },
-      "prompt": "{file:./prompts/generalH.md}"
+      "prompt": "{file:./prompts/general.md}"
     },
 
     "exploreL": {
-      "description": "L-tier read-only local exploration subagent for quick file, symbol, setting, command-output, or log lookup.",
+      "description": "L-tier local read-only investigation subagent; same role as explore/exploreH, for investigation whose reasoning demand is low.",
       "mode": "subagent",
       "reasoningEffort": "low",
       "effort": "low",
       "temperature": 0.1,
       "steps": 40,
-      "prompt": "{file:./prompts/exploreL.md}"
+      "prompt": "{file:./prompts/explore.md}"
     },
 
     "explore": {
-      "description": "Default mid-tier read-only local exploration subagent for codebase tracing, dependency mapping, log review, and current-state checks.",
+      "description": "Default local read-only investigation subagent; same role as exploreL/exploreH, for investigation whose reasoning demand is moderate.",
       "mode": "subagent",
       "reasoningEffort": "medium",
       "effort": "medium",
@@ -164,17 +169,17 @@
     },
 
     "exploreH": {
-      "description": "H-tier read-only large-repo mapping subagent for BSP, kernel, vendor SDK, Android, Buildroot, Yocto, bootloader, and board-support work.",
+      "description": "H-tier local read-only investigation subagent; same role as exploreL/explore, for investigation whose reasoning demand is high.",
       "mode": "subagent",
       "reasoningEffort": "high",
       "effort": "high",
       "temperature": 0.1,
       "steps": 180,
-      "prompt": "{file:./prompts/exploreH.md}"
+      "prompt": "{file:./prompts/explore.md}"
     },
 
     "scoutL": {
-      "description": "L-tier read-only scout subagent for quick external documentation, package metadata, release-note, or upstream reference checks.",
+      "description": "L-tier external/upstream research subagent; same role and capabilities as scout/scoutH, for research whose reasoning demand is low.",
       "mode": "subagent",
       "reasoningEffort": "low",
       "effort": "low",
@@ -184,11 +189,11 @@
         "webfetch": "allow",
         "websearch": "allow"
       },
-      "prompt": "{file:./prompts/scoutL.md}"
+      "prompt": "{file:./prompts/scout.md}"
     },
 
     "scout": {
-      "description": "Default mid-tier read-only scout subagent for external docs, dependency source, upstream implementation research, and local cross-reference checks.",
+      "description": "Default external/upstream research subagent; same role and capabilities as scoutL/scoutH, for research whose reasoning demand is moderate.",
       "mode": "subagent",
       "reasoningEffort": "medium",
       "effort": "medium",
@@ -202,7 +207,7 @@
     },
 
     "scoutH": {
-      "description": "H-tier read-only scout subagent for high-risk external dependency research, upstream source comparison, version/API conflicts, and multi-source evidence reconciliation.",
+      "description": "H-tier external/upstream research subagent; same role and capabilities as scoutL/scout, for research whose reasoning demand is high.",
       "mode": "subagent",
       "reasoningEffort": "high",
       "effort": "high",
@@ -212,21 +217,21 @@
         "webfetch": "allow",
         "websearch": "allow"
       },
-      "prompt": "{file:./prompts/scoutH.md}"
+      "prompt": "{file:./prompts/scout.md}"
     },
 
     "reviewL": {
-      "description": "L-tier read-only review subagent for tiny diffs, simple config changes, and quick validation sanity checks.",
+      "description": "L-tier artifact-oriented independent review subagent; same role as review/reviewH, for review whose reasoning demand is low.",
       "mode": "subagent",
       "reasoningEffort": "low",
       "effort": "low",
       "temperature": 0.1,
       "steps": 35,
-      "prompt": "{file:./prompts/reviewL.md}"
+      "prompt": "{file:./prompts/review.md}"
     },
 
     "review": {
-      "description": "Default mid-tier read-only review subagent for normal diffs, validation results, and implementation risk checks.",
+      "description": "Default artifact-oriented independent review subagent; same role as reviewL/reviewH, for review whose reasoning demand is moderate.",
       "mode": "subagent",
       "reasoningEffort": "medium",
       "effort": "medium",
@@ -236,27 +241,27 @@
     },
 
     "reviewH": {
-      "description": "H-tier read-only review subagent for high-risk diffs, BSP/kernel/vendor SDK changes, large refactors, release-sensitive changes, and validation quality review.",
+      "description": "H-tier artifact-oriented independent review subagent; same role as reviewL/review, for review whose reasoning demand is high.",
       "mode": "subagent",
       "reasoningEffort": "high",
       "effort": "high",
       "temperature": 0.1,
       "steps": 100,
-      "prompt": "{file:./prompts/reviewH.md}"
+      "prompt": "{file:./prompts/review.md}"
     },
 
     "criticL": {
-      "description": "L-tier read-only critic for quick challenge of simple conclusions, assumptions, and final-report wording.",
+      "description": "L-tier judgment-oriented independent critic; same role as critic/criticH, for challenge whose reasoning demand is low.",
       "mode": "subagent",
       "reasoningEffort": "low",
       "effort": "low",
       "temperature": 0.1,
       "steps": 35,
-      "prompt": "{file:./prompts/criticL.md}"
+      "prompt": "{file:./prompts/critic.md}"
     },
 
     "critic": {
-      "description": "Default mid-tier read-only critic for assumptions, weak conclusions, skipped scope, missing tests, and overstated completion.",
+      "description": "Default judgment-oriented independent critic; same role as criticL/criticH, for challenge whose reasoning demand is moderate.",
       "mode": "subagent",
       "reasoningEffort": "medium",
       "effort": "medium",
@@ -266,13 +271,13 @@
     },
 
     "criticH": {
-      "description": "H-tier read-only critic for high-risk completion claims, multi-source evidence conflicts, BSP/kernel/vendor SDK work, and expensive-rework prevention.",
+      "description": "H-tier judgment-oriented independent critic; same role as criticL/critic, for challenge whose reasoning demand is high.",
       "mode": "subagent",
       "reasoningEffort": "high",
       "effort": "high",
       "temperature": 0.1,
       "steps": 110,
-      "prompt": "{file:./prompts/criticH.md}"
+      "prompt": "{file:./prompts/critic.md}"
     }
   }
 }

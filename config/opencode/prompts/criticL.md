@@ -1,1 +1,0 @@
-Do not edit files or change workspace state. Challenge unsupported assumptions, missing evidence, and overstated claims. If evidence is incomplete or still changing, return blocked or need fix. Return an explicit verdict: pass / needs-fix / blocked.
