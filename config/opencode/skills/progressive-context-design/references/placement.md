@@ -1,91 +1,65 @@
-# Information Placement Guide
+# Information Placement and Hierarchy Rebalancing
 
-當你不知道一段資訊在 OpenCode-oriented repository 中應該放哪裡時，依序判斷。
+Use this reference to choose the natural owner of durable information and decide whether an existing hierarchy should be split, lifted, sunk, merged, or have an intermediate layer removed. `../SKILL.md` owns the core single-authority and local-owner-first rules.
 
-## README / AGENTS decision rule
+## Find the natural owner first
 
-先依 execution-time necessity 與 authority 判斷，不依預期讀者是 human 還是 AI 判斷：
+Ask:
 
-- execution-time invariant、operational policy 或 safety boundary -> `AGENTS.md`
-- architecture、rationale、lifecycle、orientation 或 navigation -> `README.md` / focused maintenance guide
-- 兩者都需要 -> minimum actionable rule 放在 `AGENTS.md`，deeper explanation 放在 `README.md`；`AGENTS.md` 可以附上精確 pointer
+1. Which tasks or readers actually need this information?
+2. At what point must they obtain it?
+3. What is the narrowest location that reliably reaches all of them without forcing unrelated scopes to load it?
 
-不要只是為了寫「Before modifying this subsystem, read README.md」而建立 `AGENTS.md`。如果實際 mandatory policy 唯一存在 README，這會形成 policy indirection；pointer 可以補充 deeper context，但不能取代 `AGENTS.md` 中執行時所需的最小 actionable rule。
+Typical owners include:
 
-## 1. Agent 執行時是否一定需要？
+| Information | Typical natural owner |
+| --- | --- |
+| Personal/platform behavior that applies across projects | applicable global instruction owner |
+| New invariant shared across tasks in one project | project-level instruction owner |
+| Method for one task class | task skill runtime entry plus conditional references |
+| Mandatory invariant when modifying one subtree | narrowest local instruction owner the receiving platform can guarantee to load |
+| Purpose, rationale, lifecycle, maintenance, general navigation | README or guide |
+| Rationale for one setting, local behavior, or algorithm invariant | nearby source/config comment or local document |
+| Past decisions, changes, states | durable history owner |
+| Observation supporting one version or validation state | evidence artifact with version/source |
 
-如果是，把最低限度規則放進對應 runtime-loaded instruction：
+These are mappings, not filename templates. Use the target platform's actually reachable equivalent owner.
 
-- repository/project invariant -> `AGENTS.md`
-- primary/subagent role behavior -> 對應 prompt
-- skill execution protocol -> `SKILL.md`
+## Local-owner-first and progressive stop
 
-只放執行需要的內容。Background、provenance、maintenance history 與大型 example 通常不應一起載入。
+If information already sits in the closest correct natural owner and has no higher-level runtime, navigation, public-contract, or maintenance dependency, stop the review there. Do not create an upper-level summary or index only for completeness.
 
-## 2. 是否只解釋附近的一個 value / implementation choice？
+A comment beside an algorithm is often enough for an implementation-only invariant. A rule such as "any agent modifying this subtree must do X first" may need an earlier guaranteed instruction owner because a source comment is encountered too late.
 
-如果格式支援註解，把 rationale 放在附近。
+## Parent and child responsibilities
 
-常見例子：
+A parent owns only true shared invariants, necessary inheritance contracts, and navigation that must be known before entering children. A child owns local deltas, exceptions, and additional constraints.
 
-- JSONC profile 為什麼選某個 provider/model
-- 某個 threshold 為什麼只在這台 machine 使用
-- provider-specific request option 為什麼存在
-- compatibility workaround 為什麼還不能刪
+Do not duplicate the entire parent contract to make a child standalone. State exceptions explicitly with their conditions and scope.
 
-不要要求正在編輯該檔案的 AI 為了 local rationale 回到 root README。
+## Rebalance instead of appending forever
 
-## 3. 是否描述完整 subsystem？
+When a parent accumulates child-specific rules:
 
-由 subsystem README / focused maintenance guide 擁有，例如：
+1. identify truly shared rules;
+2. sink child-specific rules to their natural owners;
+3. lift broader shared rules to an appropriate ancestor when needed;
+4. remove the parent instruction layer if it no longer owns mandatory responsibility;
+5. if only durable general navigation remains, usually move that role to README/navigation content;
+6. recheck inherited contracts, reference loading, and navigation.
 
-- shared OpenCode config layering
-- DCP architecture / update policy
-- Cross-AI reviewer topology
-- Command Guard lifecycle
-- skill design / provenance
+Filesystem nesting, directory adjacency, and matching filenames do not prove authority inheritance.
 
-Runtime entry file 只保留操作當下需要的 rule，並指向 deeper owner。
+## Create or remove information units only for real boundaries
 
-## 4. 是否是 repository-wide orientation / invariant？
+Create a separate README, AGENTS, reference, index, or intermediate layer only when at least one of these differs: scope, loading time, maintenance responsibility, mandatory-loading requirement, or independent navigation value.
 
-放在自然 repository entry：
+If an intermediate layer no longer provides those values, merge or remove it instead of preserving it merely because it already exists.
 
-- root `README.md`：purpose、map、responsibility、navigation
-- root `AGENTS.md`：工作時一定不能違反的 repository invariant
+## Moving authority and derived copies
 
-不要把 subsystem implementation detail 拉到 root。
+Before moving authority, identify the old owner, new owner, and all dependents. After the move, keep only minimal forwarding information at the old location if it still has navigation value; do not leave a second current rule.
 
-## 5. 是否是一個 logical change 的歷史 rationale？
+Derived mirrors, generated copies, and necessary summaries require one authoritative source, an explicit synchronization relation, and a distinct purpose. If the runtime could load both as authoritative instructions, fix the loading structure first.
 
-放進 commit message。
-
-若 rationale 同時形成目前仍有效的 rule，active rule 也要存在 current authoritative document。
-
-## 6. 是否只是一次性 investigation / migration evidence？
-
-保留在最適合的 evidence layer，例如：
-
-- commit message
-- migration note
-- review artifact
-- issue / PR history
-- temporary, deliberately uncommitted evidence
-
-不要因為 evidence 有價值，就把 active runtime instruction 變成 chronological archive。
-
-## Public/private boundary
-
-Public documentation 可以描述 private interface，但不要複製 private inventory。
-
-Private profile 可以保存 machine-specific provider/model mapping 與 local rationale，但 credential 仍然不進 Git。
-
-## Duplication test
-
-複製完整 explanation 前先問：
-
-> 未來兩份發生 divergence 時，哪一份算 authoritative？
-
-若答案不清楚，就 reference，不要 duplicate。
-
-好的 reference 要說明「為什麼去看」，並使用精確 path；避免只有 `see docs` 這類模糊導航。
+Placement changes alter the dependency graph; propagate them through [change-impact.md](change-impact.md).

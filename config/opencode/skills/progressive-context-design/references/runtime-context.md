@@ -1,67 +1,64 @@
-# Runtime Context Guide
+# Runtime Context, Reachability, and Reference Routing
 
-OpenCode 的 runtime-loaded instruction 會直接消耗模型 context，因此它和一般 documentation 的成本不同。
+Use this reference for runtime-loaded instructions, skills, reference triggers, guaranteed reachability, and progressive loading. `../SKILL.md` owns the minimum obligations; this file owns loading topology and validation method.
 
-常見 runtime context：
+## Separate execution platform from receiving platform
 
-```text
-AGENTS.md
-prompts/*.md
-skills/*/SKILL.md
-automatically injected project instructions
-```
+Record the current execution platform, receiving platform, artifact type, available tools, and the receiver's actual loading mechanism. Authoring in one environment does not imply the target repository, OpenCode runtime, or user machine has the same tools, files, or permissions.
 
-## 應優先保留
+## Loading layers
 
-- trigger condition
-- execution sequence
-- hard safety / permission boundary
-- invariant
-- required tool behavior
-- required output format
-- stop / failure condition
-- 什麼情況需要載入哪個 deeper reference
+| Layer | Question it must answer |
+| --- | --- |
+| skill ID/name/description or equivalent selection metadata | Should this method be selected for the task? |
+| guaranteed runtime entry | What minimum behavior, boundary, stop condition, and deeper trigger must always be known? |
+| triggered reference | How is this branch executed correctly, including exceptions and validation? |
+| README/rationale/maintenance background | Why is the design this way and how is it maintained? |
 
-## 通常移出去
+Keep short always-needed rules in the guaranteed entry. Do not hide mandatory behavior behind paths the agent must guess, and do not infer automatic loading from special-looking filenames.
 
-- design history
-- provenance
-- migration chronology
-- maintenance/update procedure
-- extended example
-- 長篇 compatibility discussion
-- 只有修改 subsystem 本身時才需要的 rationale
+## OpenCode-specific loading evidence
 
-## Self-contained 不等於 comprehensive
+For OpenCode, distinguish skill advertisement/discovery, permission, skill-body loading, supporting-file path advertisement, and actual reference-content reading. A supporting file appearing in a sampled file list does not prove its contents were read.
 
-Runtime-loaded file 仍必須足夠 self-contained，讓 agent 能正確執行。
+Treat `AGENTS.md` or another instruction file as guaranteed only when the effective OpenCode version, working-directory/project lookup, config, or other runtime evidence establishes that it is loaded for the relevant task. Do not infer nested `AGENTS.md` loading solely from path nesting.
 
-判斷方式：
+## Guaranteed reachability
 
-> 少了這段資訊，agent 在這次 invocation 會不會更容易做錯？
+Mandatory local information requires a complete path:
 
-如果會，保留。
+`guaranteed entry -> observable trigger/routing condition -> exact target -> read-before decision/action`.
 
-如果只影響「理解這個 subsystem 當初怎麼設計或怎麼維護」，通常移到 README/reference。
+File existence and README links do not establish reachability. If the platform does not automatically load nested instructions, use a routing mechanism that the actual platform supports.
 
-## OpenCode skill pattern
+## Reference-trigger contract
 
-```text
-SKILL.md
-├── trigger
-├── required behavior
-├── minimum workflow
-├── stop / failure rules
-└── conditional references
+Every execution reference needs:
 
-README.md
-├── design rationale
-├── architecture
-├── maintenance
-└── provenance
+1. an observable trigger from task/artifact/state;
+2. an exact resolvable relative path;
+3. a read-before point;
+4. a content boundary sufficient to include constraints and exceptions that can change the action;
+5. missing/inaccessible behavior.
 
-references/
-└── only-on-demand deeper rules
-```
+A filename, directory listing, title, or search hit is not evidence that required content was read.
 
-不要只因為資料「跟 skill 有關」就全部塞進 `SKILL.md`。
+## Splitting must not disconnect capability
+
+Before moving a method into a reference, map the original observable condition, how the runtime entry recognizes it after the split, when the reference is read, and what happens if it is unavailable.
+
+A trigger such as "when needed" or "if useful" is not sufficient when the method can change behavior. Fix routing or cancel the split. Do not create forwarding-only reference chains without independent information value.
+
+## Multiple references may trigger together
+
+Reference triggers are not a mutually exclusive menu. Documentation, placement, runtime loading, and change impact can all apply to one task. Read every required reference before its dependent decision. If one judgment is a prerequisite for another, follow dependency order; when no dependency exists, the required references may be loaded in the same stage.
+
+## Reread when context changes
+
+Previously read content may be reused only while it remains in context, is unchanged, and the triggering conditions remain the same. Reread when the reference/version changes, necessary content leaves context, a new branch becomes active, or target platform/artifact/scope changes.
+
+## Validate loading topology proportionately
+
+Choose cases according to the changed behavior: a clear trigger, a nearby case that should stop before an unrelated deeper reference, simultaneous triggers, uncertain trigger applicability, missing/denied required reference, and version/context changes when relevant.
+
+Evidence must show the required reference was read before the dependent judgment and unrelated references were not unconditionally preloaded. If the runtime cannot expose actual loading, report the validation gap; static topology is not runtime-loading proof.

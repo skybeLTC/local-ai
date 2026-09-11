@@ -1,73 +1,84 @@
-# Progressive Context Review Checklist
+# Information-Architecture Review Dimensions
 
-在 finalize substantial OpenCode documentation、instruction、skill、config-comment 或 commit-message change 前使用。
+This is the stable final-review dimension inventory. `../SKILL.md` owns the minimum execution contract. Determine which dimensions apply to the current artifact/change and check only those; do not mechanically run every item, and do not change standards ad hoc between reviews.
 
-## Discoverability
+If a recurring cross-case failure mode is not represented here, report it as a candidate review dimension with rationale. Do not silently add a one-off standard or permanently encode an isolated special case.
 
-- 自然入口能否發現這項資訊？
-- 每個 deeper file 是否真的增加 orientation / authority？
-- reference 是否使用精確 path，而不是 vague pointer？
-- 是否存在 forwarding-only layer？
+## 1. Target, scope, responsibility
 
-## Authority
+- Are execution platform, receiving platform, artifact type, and actual loading mechanism distinguished?
+- Are review and edit authorization separated?
+- Are information architecture, engineering, skill authoring, commit-message authoring, and other specialized responsibilities separated?
+- Do language, format, and classification come from applicable authority?
 
-- 每條 active rule 是否只有一個清楚 authoritative owner？
-- 是否避免維護兩份完整、會獨立 drift 的 policy？
-- README/AGENTS placement 是否依 runtime necessity 與 authority，而不是 human-vs-AI audience？
-- README 在適當情況下是否同時 usable by agents and humans？
-- mandatory execution rule 是否沒有只藏在 README，再靠 AGENTS 的「read this first」indirection？
-- README/AGENTS overlap 時，是否一方擁有 rule，另一方只有 scoped summary/pointer 或 rationale？
-- current state 是否和 historical rationale 分開？
+## 2. Natural owner and authority
 
-## Runtime context cost
+- Does each current rule have one narrow natural owner that reliably reaches all required consumers?
+- Does local information remain local unless a higher dependency exists?
+- Do README, runtime instructions, skills, source comments, history, and evidence own information appropriate to their roles?
+- Do derived mirrors/generated copies have one authoritative source and explicit synchronization?
+- Is there any forwarding-only mandatory policy, competing current version, or history used as current policy?
 
-- `AGENTS.md`、prompt、`SKILL.md` 是否只保留 invocation 需要的 behavior？
-- maintenance history / provenance / extended example 能否移到 supporting docs？
-- runtime file 是否仍足夠 self-contained？
+## 3. Hierarchy balance
 
-## Locality
+- Is a parent holding too many child-specific rules?
+- Should shared invariants move upward or local rules downward?
+- Do children contain only local deltas/exceptions/additional constraints instead of copied parent contracts?
+- Does each intermediate instruction/navigation layer still have independent scope, loading, or navigation value?
+- Is filesystem nesting being mistaken for authority nesting?
 
-- local JSONC/code rationale 是否能放在 value 附近？
-- 正在編輯單一檔案的 AI 是否能理解重要 local constraint，而不必無意義 backtrack？
+## 4. Progressive loading and reachability
 
-## Repository architecture
+- Does each execution reference have an observable trigger, exact path, read-before point, and missing behavior?
+- Does mandatory local information have a path from a guaranteed runtime entry?
+- Did reference splitting preserve capability reachability?
+- Can simultaneous triggers load all required references?
+- Are untriggered references left unloaded?
+- Are uncertain triggers, missing/denied references, changed versions, and lost context handled explicitly?
 
-- root README 是否是 map，而不是 subsystem dump？
-- root/project `AGENTS.md` 是否只保存 repository execution invariant？
-- nested repositories / public-private boundaries 是否清楚？
-- subsystem README 是否真的擁有它描述的 architecture / maintenance policy？
+## 5. Documentation and procedures
 
-## Precision and evidence
+- Does durable documentation state scope, current status, natural entry, and deeper path clearly?
+- Does README own rationale/maintenance/navigation without monopolizing mandatory runtime policy?
+- Are procedure preconditions, warnings, stop points, observable results, decision criteria, and branches placed near affected actions?
+- Are current procedure, historical example, fact, assumption, evidence, and open question distinguishable?
 
-- path、key、command、branch、identifier、expected outcome 是否精確？
-- current value、example、verified fact、assumption 是否有區分？
-- validation claim 是否只包含真的執行過的 check？
-- intentional deferral / uncertainty 是否在會影響理解的位置可見？
+## 6. Repository navigation
 
-## Security
+- Can a consumer reach the true source of authority from natural entry points?
+- Does each navigation item state when to enter, path root, and expected authority/evidence?
+- Are nested/multiple repository ownership, Git history, and edit authorization clear?
+- Does any navigation layer merely forward without new decision value?
 
-- public documentation 是否避免 private provider/model inventory？
-- private Git 是否仍排除 credential？
-- progressive disclosure 是否沒有被誤用成「只要藏深一點就可以公開」？
+## 7. History
 
-## Commit message
+- Can later agents know current state without replaying all history?
+- Are historical records' current/superseded/obsolete or equivalent statuses identifiable?
+- Do temporary migration/handoff artifacts have lifecycle/retirement criteria?
+- When Git history applies, does subject -> full message -> diff/source provide effective progressive navigation?
+- Has the information role of commits been confused with commit-message authoring authority?
 
-- subject 是否描述 semantic result？
-- opening paragraph 是否快速說清楚目的？
-- body 是否保留 non-obvious rationale，而不是重述 filename diff？
-- validation 是否精確？
-- deferred work 是否只在真的影響 interpretation 時記錄？
-- commit 是否是一個 coherent logical unit？
+## 8. Information boundaries
 
-## Final test
+- Are source/destination public/private/confidential or other information scopes established?
+- Is work staying within existing classification instead of broadening disclosure unilaterally?
+- When classification looks wrong, is the rationale reported and the decision boundary preserved?
+- Is mandatory information hidden where required consumers cannot access it?
 
-Future AI 應能在不預先載入全部文件的情況下回答：
+## 9. Change-impact propagation
 
-```text
-What is this?
-What is authoritative?
-Why is it this way?
-Where should I read next?
-What was verified?
-What is private, uncertain, or deferred?
-```
+- Are all substantive change nodes represented?
+- Were direct upstream and downstream dependencies rechecked?
+- Were siblings included only when evidence signaled a relation?
+- Did affected dependencies become new change nodes and continue propagation?
+- Was hierarchy rebalance included rather than only link updates?
+- Does every branch stop at an evidence-supported impact boundary?
+- Are authorization, information-boundary, and evidence gaps kept unresolved rather than labeled unaffected?
+
+## 10. Completion evidence
+
+- Are structure checks, scenario exercises, runtime loading, behavior tests, and install/deploy state reported separately?
+- Does each validation claim match the exact version/state supported by evidence?
+- Do unresolved validation gaps state which judgment or next step they affect?
+
+When a gap is found, identify the natural owner/authority, affected action, minimum necessary correction, and unresolved boundary. Review itself does not authorize unrelated edits.

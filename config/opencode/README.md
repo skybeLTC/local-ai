@@ -8,6 +8,7 @@
 - `AGENTS.md`：所有 primary/subagent 都需要進 context 的 global runtime rules。
 - `prompts/`：各 agent 的 role-specific contract；只有該角色執行時才需要對應細節。
 - `skills/`（存在時）：可公開的 workflow / knowledge skills；每個 skill 由自己的 `SKILL.md` 決定 runtime behavior，README / references 保存 deeper design 與 maintenance detail。
+- `skill-reviews/`（存在時）：`skills/` 中英文文字來源的台灣繁中人工檢視版；不是 OpenCode skill source，也不持有第二份 runtime authority。詳細 mapping 與同步規則由 `skill-reviews/README.md` 持有。
 - `README.md`：只負責這個 subsystem 的跨檔案架構、authority 與 maintenance boundary。
 
 需要理解某個 agent 時，先看 `opencode.jsonc` 的該 agent，再沿著 `prompt` file reference 讀對應 `prompts/*.md`。需要理解某個 skill 時，從該 skill 的 `SKILL.md` 開始，不要預先載入整個 skill directory。
@@ -59,7 +60,7 @@ Local read-only inspection 原則上不因 agent tier 額外阻擋；機密性�
 
 Skill-specific permission 應跟著 skill 本身的 adoption 一起加入；不要預先為尚未存在的 skill 維護 named rule。
 
-## Runtime prompt 與台灣繁中 mirror
+## 英文 runtime source 與台灣繁中檢視版
 
 `AGENTS.md` 與 `prompts/*.md` 的英文檔是 OpenCode runtime authority。對本專案自行建立或修改的全英文文字 runtime artifact，使用同層、同 basename 的 `.zh-TW.md` 作同步台灣繁中 mirror，例如：
 
@@ -68,7 +69,9 @@ AGENTS.md <-> AGENTS.zh-TW.md
 prompts/build.md <-> prompts/build.zh-TW.md
 ```
 
-`.zh-TW.md` 只供人工 review 與維護，不加入 `opencode.jsonc` 的 runtime `prompt` reference，也不建立第二份行為權威。修改英文 authority 時同步更新 mirror；只修改翻譯措辭時不得改變英文 runtime contract。`opencode.jsonc`、程式碼、指令與 logs 等非文字執行產物不因包含英文而建立翻譯副本。
+OpenCode skill 的繁中檢視版不放進 `skills/<skill>/` runtime tree。英文來源仍位於 `skills/<skill>/...`，對應繁中檢視版放在 sibling `skill-reviews/<skill>/...`，並保留 skill-relative 結構與 `.zh-TW.md` suffix；完整 mapping 與同步規則見 `skill-reviews/README.md`。
+
+所有繁中檢視版都只供人工 review 與維護，不建立第二份 runtime authority。Runtime config、`SKILL.md` 與 execution references 不得把繁中檢視版當作執行來源。修改英文 authority 時同步更新 mirror；只修改翻譯措辭時不得改變英文 runtime contract。`opencode.jsonc`、程式碼、指令與 logs 等非文字執行產物不因包含英文而建立翻譯副本。
 
 ## Runtime-managed package state
 
@@ -92,4 +95,5 @@ bun.lock
 3. `opencode.jsonc`：value-local rationale 與 nearby compatibility constraint。
 4. `AGENTS.md` / `prompts/*.md` / `skills/*/SKILL.md`：執行時真正需要的 behavior。
 5. skill/plugin/subsystem README 與 references：只在維護該 subsystem 或需要 deeper context 時讀取。
-6. Git commit message：保存 logical change 的 historical rationale 與當次 validation，不取代 current documentation。
+6. `skill-reviews/`：只保存 OpenCode skill 的繁中人工檢視副本，不加入 runtime loading/navigation path。
+7. Git commit message：保存 logical change 的 historical rationale 與當次 validation，不取代 current documentation。
