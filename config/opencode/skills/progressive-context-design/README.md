@@ -42,7 +42,7 @@ Reference 拆分只有在功能仍可達時才成立。每個 execution referenc
 
 `AGENTS.md`、`SKILL.md` 或其他 instruction file 只有在目標 OpenCode 的實際 loading mechanism 賦予它 runtime role 時，才是 guaranteed entry。不要只因檔名或目錄位置推定 OpenCode 一定載入。
 
-本 skill 只持有 platform-neutral information-architecture methodology 加上 OpenCode 所需的 loading terminology；OpenCode skill packaging、V2 metadata、permission、discovery 與 validation methodology 仍由 `opencode-skill-authoring` 類方法負責。
+本 skill 只持有 platform-neutral information-architecture methodology 加上 OpenCode 所需的 loading terminology；OpenCode skill packaging、V2 metadata、permission、discovery 與 validation methodology 仍由 `opencode-skill-authoring` 負責。
 
 ## History 的分層
 

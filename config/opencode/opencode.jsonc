@@ -21,7 +21,7 @@
       "progressive-context-design": "allow",
       "cross-ai-review": "deny",
       "coding": "allow",
-      "skill-creator": "deny",
+      "opencode-skill-authoring": "deny",
       "diagnosing-bugs": "deny",
       "grilling": "deny"
     },
@@ -56,7 +56,7 @@
         "websearch": "allow",
         "skill": {
           "cross-ai-review": "allow",
-          "skill-creator": "ask",
+          "opencode-skill-authoring": "ask",
           "diagnosing-bugs": "allow",
           "grilling": "allow"
         },
