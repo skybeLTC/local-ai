@@ -1,68 +1,51 @@
 # Cross-AI Final Review Checklist
 
-Read this when the cross-AI task reaches final implementation review, delivery, commit/deployment, or closeout.
+Read this at final implementation review, delivery, commit/deployment, or closeout. Check only dimensions that apply.
 
-This file is a conditional runtime extension of `../SKILL.md`. It turns the existing protocol into a final checklist; it does not replace the core substantive-judgment and scope rules.
+## Context and evidence
 
-## Context
+- Is this still the same cross-AI task? If a peer side moved to a new session, was necessary context recovered instead of assumed to transfer automatically?
+- Are the user's newest requirements, scope, authorization, constraints, and blockers applied?
+- Were material claims checked against exact available repo/files/Git/log/build/test evidence instead of summaries or memory?
+- If evidence is missing, is the affected judgment/gate and minimum missing input explicit?
 
-- Is the current peer response or supplied session export actually represented in the evidence being used?
-- Have the user's newest requirements, constraints, decisions, and blockers in this conversation been applied?
-- Has any material change since the peer AI's last response been surfaced explicitly?
+## Peer-question coverage
 
-## Evidence
+- Does every still-relevant explicit peer question have `ANSWERED`, `UNRESOLVED`, `SUPERSEDED`, or `NOT_APPLICABLE` disposition?
+- Were partially superseded questions split so an open part was not hidden?
+- Does each `UNRESOLVED` item identify missing evidence/input, affected gate, and independent work that may continue?
+- Were newer user answers applied directly, and did any new substantive judgment from them trigger its own gate?
 
-- Were material claims checked against directly available repo state, Git state, files, logs, command output, build output, or test results?
-- When an exact source text or artifact was needed, was the exact version used rather than reconstructed from memory or a summary?
-- Are peer claims such as “done” or “tests passed” backed by sufficient evidence rather than accepted at face value?
+## Scope, authorization, and forward progress
 
-## Consensus
+- Was review kept separate from modification/commit/push/install/deploy authorization?
+- Was a handoff destination kept separate from an exclusive implementation constraint?
+- Was user-relative wording such as "this round" interpreted from user context rather than redefined as an internal lifecycle round?
+- When a side's independent review closed the current stage, did that side enter the next legal stage instead of creating an information-free handoff?
+- Was the next stage chosen from the lifecycle rather than assuming it is always implementation?
 
-- Has diagnosis been cross-reviewed?
-- Has the remediation direction been cross-reviewed?
-- Is any new substantive judgment still waiting for peer review?
-- If a problem is only an implementation defect within the accepted remediation, was it kept inside the implementation-review loop instead of unnecessarily reopening remediation?
+## Candidate, validation, and implementation review
 
-## Scope
+- Are candidate identity, validation, implementation-review status, technical completion, and apply/commit/push/install/deploy reported separately?
+- Did implementation eligibility depend on authorization, accepted remediation, exact source/candidate, ability to edit, and required implementation inputs—not on post-implementation validation capability?
+- If local validation was unavailable, was a formal candidate still allowed while the validation gap remained explicit?
+- If runtime evidence was required to choose the implementation, was dependent editing stopped until that input existed?
+- Was a premature candidate preserved/reviewed after remediation consensus instead of reimplemented for formality?
+- If a reviewer fixed an implementation defect, did the reviewer become implementer of the new candidate and the other side review it?
+- Did source-level review start when useful without claiming final PASS before required validation was sufficient?
 
-- Are the named formal deliverables explicit?
-- Is required validation evidence explicit?
-- Have optional migration, deployment, or helper artifacts remained outside formal implementation scope unless the user expanded scope?
-- Has reviewing an artifact been kept separate from authorization to modify it?
+## OpenCode-specific independent-review topology
 
-## Implementation
+- While this cross-AI task was active, was the external peer used for the independent-review role instead of dispatching `review*` or `critic*` as a duplicate reviewer?
+- Were other subagents limited to narrowly scoped factual investigation?
 
-- Does the implementation faithfully match the accepted remediation?
-- Was required validation actually run, or explicitly handed off to the environment that can run it?
-- If the current side could not reliably implement or validate something, was the missing file, state, command output, log, toolchain, or environment named precisely?
-- If a new remediation judgment emerged, were formal edits stopped and the judgment returned to the peer AI?
+## Session export and file exchange
 
-## Independent-review topology
-
-- While this cross-AI task is active, was the external peer AI used for the independent-review role instead of dispatching the `review*` or `critic*` subagent family as a duplicate reviewer?
-- Were other subagents limited to narrowly scoped factual investigation when used?
-
-## File exchange
-
-If files must be exchanged, read `file-exchange.md` and confirm its archive, path, security, reuse, and handoff rules were followed.
-
-## Handoff completion gate
-
-- If formal deliverables changed and the peer AI lacks direct access, was a current `.tar.zst` actually created, or was an existing archive verified to contain the unchanged current deliverables?
-- Was the archive verified as readable and matched to the current formal deliverables?
-- Does the final response give the exact archive path, SHA256, and relevant entry list or other precise handoff evidence?
-- If direct access makes an archive unnecessary, does the final response explicitly say the handoff archive is not required and give the reason?
-- Is the handoff status non-silent? A pasted diff, commit summary, `git show` output, commit hash, or claim that files are committed cannot satisfy a required exchange.
+- If a session export was used, was `session-export.md` applied to decompression/parsing, truncation, tool-result coverage, and attachment/artifact coverage?
+- If file exchange was required, was `file-exchange.md` applied, with a verified current `.tar.zst` or explicit direct-access exemption?
 
 ## Completion
 
-Treat the cross-AI implementation workflow as complete only when all of the following are true:
+Treat the technical workflow as complete only when formal deliverables are implemented, required validation is sufficient, final independent implementation review passed, no substantive judgment remains unresolved, all still-relevant peer questions have dispositions, and the user's requested stage deliverable is complete.
 
-```text
-named formal deliverables implemented
-+ required validation sufficient
-+ peer implementation review passed
-+ no unresolved substantive judgment
-```
-
-Once those conditions are satisfied, do not create an information-free confirmation loop by asking the implementer to reconfirm the review result.
+Do not ask the implementer to reconfirm a final reviewer PASS. Keep commit/push/install/deploy/user-review gates separate and report them from their own evidence/authorization.
