@@ -48,20 +48,11 @@ Runtime-managed dependency files（例如 `node_modules/`、`package.json`、`bu
 
 Agent role 與 reasoning tier 是兩個獨立維度。`generalL/general/generalH` 等同一 role 的三個 agent ID 共用同一份 role prompt 與 role capability；`L`、default、`H` 只表示該次委派工作需要的 reasoning capacity，不代表 workflow risk、domain 或另一套角色行為。
 
-Public config 保留 provider-portable tier intent：
+Public config 保留 reasoning tier 的 provider-neutral semantics：agent ID、description、role capability 與 step budget 定義 `L`、default、`H` 的共用意義，但不直接送出 provider-specific reasoning request option。
 
-- `reasoningEffort`：OpenAI/Codex-style reasoning control。
-- `effort`：Anthropic-style adaptive reasoning control。
-- `steps`：目前沿用既有 provisional budget；尚未宣稱最佳化，只有實際 step exhaustion 或明顯浪費等證據出現時再獨立調整。
+實際 model 與 reasoning 強度由 machine profile 擁有，透過 model assignment 與明確的 reasoning control（目前 work profile 使用 `variant`）指定；只有特定 provider/model 需要的 request option，也留在對應 profile 或 model definition。shared config 不同時設定另一套 `reasoningEffort` / `effort`，避免同一 agent 出現兩個 reasoning control sources。
 
-`reasoningEffort` 與 `effort` 是 provider-specific pass-through options，用來表達同一個 low/medium/high tier intent。採用新的 provider/model 時仍必須做 runtime compatibility validation；不能假設所有 provider 都會安全忽略不認識的 option。
-
-以下設定屬於 provider/model-specific behavior，應跟著實際 model assignment 放在 private profile，而不是 public shared role：
-
-- `thinking`
-- `sandboxMode`
-- `approvalPolicy`
-- 其他只對單一 transport/model family 有意義的 request option
+`steps` 仍是 shared execution budget，目前沿用既有 provisional allocation，尚未宣稱已最佳化；只有出現實際 step exhaustion、明顯浪費或其他可驗證證據時，再把 step allocation 當成獨立問題調整。
 
 Workflow intensity 由 `prompts/build.md` 控制流程保障強度，與 reasoning tier 分開判斷。高風險任務不自動等於 H-tier；H-tier 也不隱含特定 BSP/kernel/Yocto 等 domain knowledge。
 

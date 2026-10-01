@@ -125,24 +125,15 @@
       }
     },
 
-    // Provider-portable reasoning policy:
-    // - reasoningEffort is consumed by OpenAI/Codex-style providers.
-    // - effort is consumed by Anthropic-style adaptive reasoning.
-    //
-    // These pass-through options intentionally coexist so changing an agent's
-    // backing model does not require redefining its reasoning tier. They are not
-    // a promise that every provider accepts every option: validate compatibility
-    // when adopting a new model/provider.
-    //
-    // Execution controls such as sandboxMode/approvalPolicy are provider-specific
-    // and belong with the machine profile/model assignment. Model-specific
-    // `thinking` configuration belongs with the provider/model definition too.
+    // Reasoning tier is a shared semantic contract, not a provider request
+    // option. Agent IDs, descriptions, capabilities, and step budgets define
+    // the shared L/default/H intent. The active machine profile owns concrete
+    // model selection and reasoning controls such as `variant`; provider/model
+    // request options belong with that profile or model definition.
 
     "generalL": {
       "description": "L-tier implementation subagent; same role and capabilities as general/generalH, for implementation work whose reasoning demand is low.",
       "mode": "subagent",
-      "reasoningEffort": "low",
-      "effort": "low",
       "temperature": 0.1,
       "steps": 50,
       "permission": {
@@ -159,8 +150,6 @@
     "general": {
       "description": "Default implementation subagent; same role and capabilities as generalL/generalH, for implementation work whose reasoning demand is moderate.",
       "mode": "subagent",
-      "reasoningEffort": "medium",
-      "effort": "medium",
       "temperature": 0.1,
       "steps": 120,
       "permission": {
@@ -177,8 +166,6 @@
     "generalH": {
       "description": "H-tier implementation subagent; same role and capabilities as generalL/general, for implementation work whose reasoning demand is high.",
       "mode": "subagent",
-      "reasoningEffort": "high",
-      "effort": "high",
       "temperature": 0.1,
       "steps": 180,
       "permission": {
@@ -195,8 +182,6 @@
     "exploreL": {
       "description": "L-tier local read-only investigation subagent; same role as explore/exploreH, for investigation whose reasoning demand is low.",
       "mode": "subagent",
-      "reasoningEffort": "low",
-      "effort": "low",
       "temperature": 0.1,
       "steps": 40,
       "prompt": "{file:./prompts/explore.md}"
@@ -205,8 +190,6 @@
     "explore": {
       "description": "Default local read-only investigation subagent; same role as exploreL/exploreH, for investigation whose reasoning demand is moderate.",
       "mode": "subagent",
-      "reasoningEffort": "medium",
-      "effort": "medium",
       "temperature": 0.1,
       "steps": 80,
       "prompt": "{file:./prompts/explore.md}"
@@ -215,8 +198,6 @@
     "exploreH": {
       "description": "H-tier local read-only investigation subagent; same role as exploreL/explore, for investigation whose reasoning demand is high.",
       "mode": "subagent",
-      "reasoningEffort": "high",
-      "effort": "high",
       "temperature": 0.1,
       "steps": 180,
       "prompt": "{file:./prompts/explore.md}"
@@ -225,8 +206,6 @@
     "scoutL": {
       "description": "L-tier external/upstream research subagent; same role and capabilities as scout/scoutH, for research whose reasoning demand is low.",
       "mode": "subagent",
-      "reasoningEffort": "low",
-      "effort": "low",
       "temperature": 0.1,
       "steps": 45,
       "permission": {
@@ -239,8 +218,6 @@
     "scout": {
       "description": "Default external/upstream research subagent; same role and capabilities as scoutL/scoutH, for research whose reasoning demand is moderate.",
       "mode": "subagent",
-      "reasoningEffort": "medium",
-      "effort": "medium",
       "temperature": 0.1,
       "steps": 90,
       "permission": {
@@ -253,8 +230,6 @@
     "scoutH": {
       "description": "H-tier external/upstream research subagent; same role and capabilities as scoutL/scout, for research whose reasoning demand is high.",
       "mode": "subagent",
-      "reasoningEffort": "high",
-      "effort": "high",
       "temperature": 0.1,
       "steps": 150,
       "permission": {
@@ -267,8 +242,6 @@
     "reviewL": {
       "description": "L-tier artifact-oriented independent review subagent; same role as review/reviewH, for review whose reasoning demand is low.",
       "mode": "subagent",
-      "reasoningEffort": "low",
-      "effort": "low",
       "temperature": 0.1,
       "steps": 35,
       "prompt": "{file:./prompts/review.md}"
@@ -277,8 +250,6 @@
     "review": {
       "description": "Default artifact-oriented independent review subagent; same role as reviewL/reviewH, for review whose reasoning demand is moderate.",
       "mode": "subagent",
-      "reasoningEffort": "medium",
-      "effort": "medium",
       "temperature": 0.1,
       "steps": 60,
       "prompt": "{file:./prompts/review.md}"
@@ -287,8 +258,6 @@
     "reviewH": {
       "description": "H-tier artifact-oriented independent review subagent; same role as reviewL/review, for review whose reasoning demand is high.",
       "mode": "subagent",
-      "reasoningEffort": "high",
-      "effort": "high",
       "temperature": 0.1,
       "steps": 100,
       "prompt": "{file:./prompts/review.md}"
@@ -297,8 +266,6 @@
     "criticL": {
       "description": "L-tier judgment-oriented independent critic; same role as critic/criticH, for challenge whose reasoning demand is low.",
       "mode": "subagent",
-      "reasoningEffort": "low",
-      "effort": "low",
       "temperature": 0.1,
       "steps": 35,
       "prompt": "{file:./prompts/critic.md}"
@@ -307,8 +274,6 @@
     "critic": {
       "description": "Default judgment-oriented independent critic; same role as criticL/criticH, for challenge whose reasoning demand is moderate.",
       "mode": "subagent",
-      "reasoningEffort": "medium",
-      "effort": "medium",
       "temperature": 0.1,
       "steps": 70,
       "prompt": "{file:./prompts/critic.md}"
@@ -317,8 +282,6 @@
     "criticH": {
       "description": "H-tier judgment-oriented independent critic; same role as criticL/critic, for challenge whose reasoning demand is high.",
       "mode": "subagent",
-      "reasoningEffort": "high",
-      "effort": "high",
       "temperature": 0.1,
       "steps": 110,
       "prompt": "{file:./prompts/critic.md}"
