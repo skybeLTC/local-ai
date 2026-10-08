@@ -2,7 +2,7 @@
 
 Read this for remediation, formal implementation, implementation review, and technical completion. `../SKILL.md` owns the always-required forward-progress, authorization, substantive-judgment, peer-question-closure, and minimum-completion rules.
 
-## Fixed stages
+## Lifecycle stages, not conversation rounds
 
 1. **Diagnosis review**: establish whether the problem/cause/risk is real.
 2. **Remediation review**: establish expected behavior, scope, boundaries, and acceptance criteria.
@@ -12,11 +12,11 @@ Read this for remediation, formal implementation, implementation review, and tec
 
 Do not collapse diagnosis consensus into remediation consensus, candidate existence into validation, or review started into final review PASS.
 
-## Stage-closing transition
+## Forward progress after consensus
 
-When one side's independent review closes the consensus required by the current stage, that side immediately enters the next legal stage unless an actual gate applies. Diagnosis consensus with no remediation means that side proposes the smallest reviewable remediation. Remediation consensus plus implementation eligibility means that side implements. A candidate created by one side is reviewed by the other side.
+Apply the consensus and forward-progress rules in `../SKILL.md` without assigning work to the stage-closing side. Diagnosis consensus with no remediation calls for the smallest reviewable remediation. Accepted remediation plus implementation eligibility permits implementation without another consensus gate. A candidate created or modified by one side is reviewed by the other side.
 
-Do not compare which side is theoretically more convenient when the current side can legally perform the next stage. A future handoff destination or the fact that the other side can also edit is not a gate.
+A future handoff destination does not assign implementation ownership. If the next action needs an exact input held by the peer, obtain that input instead of returning an information-free acceptance or treating absent local repo access as permanent ownership.
 
 ## Remediation review
 
@@ -25,6 +25,8 @@ A reviewable remediation states expected behavior, in/out scope, important bound
 ## Formal implementation and state separation
 
 Before editing, confirm valid authorization, accepted remediation or an explicitly changed review gate, exact current source/candidate, ability to perform the edit, and all inputs required to select the correct implementation.
+
+Do not make overlapping formal edits to the same candidate. Identify the exact base and resulting candidate when modifying or handing off work. If candidate currency or an actual conflicting in-progress edit is uncertain and affects the proposed edit, obtain that state before affected edits. Separate snapshots produce separate candidates; do not combine their review statuses. This is candidate correctness, not an actor-selection consensus gate.
 
 Post-implementation validation capability is not an implementation-eligibility requirement. A side may create a formal candidate even with no compiler, syntax checker, static checker, or target runtime. Record validation separately as `NOT_RUN`, `PARTIAL`, `PENDING`, `PASSED`, or `BLOCKED`. If missing runtime evidence is needed to choose the implementation itself, treat it as a required implementation input and stop dependent edits.
 
@@ -54,7 +56,7 @@ If the defect requires a changed remediation judgment, return to remediation rev
 
 ## Peer questions and user decisions
 
-Before ending a cross-AI response, ensure every relevant explicit peer question has `ANSWERED`, `UNRESOLVED`, `SUPERSEDED`, or `NOT_APPLICABLE` disposition. `UNRESOLVED` blocks only dependent actions. If a newer user decision answers the question, relay that answer instead of asking again. If that answer also introduces a new substantive judgment, the question can be `ANSWERED` while dependent formal edits remain gated.
+Apply the question-closure and standalone-relay rules in `../SKILL.md`. `UNRESOLVED` blocks only dependent actions. If a newer user decision answers the question, apply and explicitly relay the answer instead of asking again. If that answer also introduces a new substantive judgment, the question can be `ANSWERED` while dependent formal edits remain gated.
 
 ## Completion
 

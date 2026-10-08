@@ -4,7 +4,7 @@
 
 本 reference 用於 remediation、formal implementation、implementation review 與 technical completion。Always-required forward progress、authorization、substantive-judgment、peer-question closure 與最低 completion 規則由英文 `../SKILL.md` 持有。
 
-## 固定 stages
+## Lifecycle stages，不等於 conversation rounds
 
 1. **Diagnosis review**：確認 problem/cause/risk 是否成立。
 2. **Remediation review**：確認 expected behavior、scope、boundaries、acceptance criteria。
@@ -14,11 +14,11 @@
 
 不要把 diagnosis consensus 寫成 remediation consensus、candidate existence 寫成 validation，或 review started 寫成 final review PASS。
 
-## Stage-closing transition
+## Consensus 後的 forward progress
 
-某一端 independent review 若關閉 current stage 所需 consensus，除非有 actual gate，該端立即承接下一個合法 stage。Diagnosis consensus 但沒有 remediation 時，該端提出最小可 review remediation；remediation consensus 且 implementation eligibility 滿足時，該端實作；一端建立的 candidate 由另一端 review。
+套用英文 `../SKILL.md` 的 consensus 與 forward-progress 規則，不把工作指定給 stage-closing side。Diagnosis consensus 但沒有 remediation 時，需要最小可 review remediation；accepted remediation 加上 implementation eligibility 即可實作，不需要另一個 consensus gate。由一端建立或修改的 candidate，交另一端 review。
 
-目前這一端能合法執行 next stage 時，不再比較哪一端理論上比較方便。Future handoff destination 或另一端也能 edit 都不是 gate。
+Future handoff destination 不指定 implementation ownership。下一個動作若需要 peer 持有的 exact input，就取得該 input，不只回 information-free acceptance，也不把缺少 local repo access 視為永久 ownership。
 
 ## Remediation review
 
@@ -27,6 +27,8 @@
 ## Formal implementation 與 state separation
 
 Edit 前確認 valid authorization、accepted remediation 或 user 明確改變 review gate、exact current source/candidate、能實際 edit，以及選擇正確 implementation 所需 inputs。
+
+不要對同一 candidate 進行重疊 formal edits。修改或 handoff 時指出 exact base 與 resulting candidate。Current candidate 是否最新或實際 conflicting in-progress edit 的狀態不明，且會影響本次 edit 時，先取得該狀態，再做受影響修改。不同 snapshots 產生不同 candidates，不混用其 review statuses。這是 candidate correctness，不是 actor-selection consensus gate。
 
 Post-implementation validation capability 不是 implementation-eligibility requirement。即使沒有 compiler、syntax/static checker 或 target runtime，仍可建立 formal candidate；validation 另標為 `NOT_RUN / PARTIAL / PENDING / PASSED / BLOCKED`。若缺少的 runtime evidence 是選 implementation 本身的必要 input，才停止 dependent edit。
 
@@ -48,7 +50,7 @@ Reviewer 若只發現 accepted remediation 內的 implementation defect，而且
 
 ## Peer questions 與 user decisions
 
-每輪結束前，每個 relevant explicit peer question 都要有 `ANSWERED / UNRESOLVED / SUPERSEDED / NOT_APPLICABLE` disposition。`UNRESOLVED` 只阻塞 dependent actions。較新的 user decision 已回答時直接 relay；若同時產生新 substantive judgment，question 可以 `ANSWERED`，但 dependent formal edits 仍受 gate 阻擋。
+套用英文 `../SKILL.md` 的 question-closure 與 standalone-relay 規則。`UNRESOLVED` 只阻塞 dependent actions。較新的 user decision 已回答時，套用並明確 relay 答案，不再詢問；若同時產生新 substantive judgment，question 可以 `ANSWERED`，但 dependent formal edits 仍受 gate 阻擋。
 
 ## Completion
 

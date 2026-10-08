@@ -6,7 +6,7 @@
 
 ## 先驗證 container 與 parse structure
 
-Compressed export 先驗證完整解壓。宣稱 JSON/JSONL 等 structured format 時，實際 parse 到檔案結尾。Truncated string/object、parser error、decompression 不完整或 structure 結尾缺失，都表示 export 不完整；不能因 filename 寫 `full` 或檔案很大就視為完整。
+Compressed export 先讀英文 `file-exchange.md`，套用其 isolated materialization 程序。接著檢查 local materialized files，不反覆 streaming compressed content。驗證完整解壓；宣稱 JSON/JSONL 等 structured format 時，實際 parse local file 到結尾。Truncated string/object、parser error、decompression 不完整或 structure 結尾缺失，都表示 export 不完整；不能因 filename 寫 `full` 或檔案很大就視為完整。
 
 辨識實際收到的是 full session、partial session、chat text only、含 tool calls/results、含 attachment refs、summary、screenshot 或 manual excerpt。
 

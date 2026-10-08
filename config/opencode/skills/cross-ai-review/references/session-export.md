@@ -4,7 +4,7 @@ Read this when the peer evidence is a full, partial, compressed, or long session
 
 ## Verify the container and parse structure first
 
-If the export is compressed, verify complete decompression. If it claims a structured format such as JSON or JSONL, parse it through the actual end of the file. A truncated string/object, parser error, incomplete decompression, or missing structural ending means the export is incomplete even if the filename says "full" or the file is large.
+If the export is compressed, first read `file-exchange.md` and apply its isolated materialization procedure. Then inspect the local materialized files instead of repeatedly streaming compressed content. Verify complete decompression; if the export claims a structured format such as JSON or JSONL, parse the local file through its actual end. A truncated string/object, parser error, incomplete decompression, or missing structural ending means the export is incomplete even if the filename says "full" or the file is large.
 
 Classify what you actually received: full session, partial session, chat text only, export with tool calls/results, export with attachment references, summary, screenshot, or manual excerpt.
 
