@@ -63,6 +63,7 @@
     "skill": {
       "*": "ask",
       "progressive-context-design": "allow",
+      "commit-message": "deny",
       "cross-ai-review": "deny",
       "coding": "allow",
       "opencode-skill-authoring": "deny",
@@ -99,6 +100,7 @@
         "webfetch": "allow",
         "websearch": "allow",
         "skill": {
+          "commit-message": "allow",
           "cross-ai-review": "allow",
           "opencode-skill-authoring": "ask",
           "diagnosing-bugs": "allow",

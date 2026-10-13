@@ -25,7 +25,7 @@ Skill 的 `README.md` 依本專案慣例直接使用台灣繁體中文，不另�
 - Review mirror 可以被人工或維護流程讀取，但不能因 mirror 的存在宣稱 OpenCode 已載入其內容。
 - 若目標 OpenCode 的 discovery 或 loading 規則改變，重新確認此 sibling tree 仍位於 runtime skill source 之外。
 
-目前目標 OpenCode fork `c73cc038da91dde71cd432d1386532bdd16b808c` 的已確認 CLI skill path 仍使用 legacy V1-style skill service：config directory 會掃 `<config>/skill` 與 `<config>/skills`，directory-form skill 以 `**/SKILL.md` 發現，skill invocation 的 supporting-file sample 只掃被載入 skill 自己的 directory。因此 sibling `skill-reviews/` 不屬於該 skill 的 discovery 或 supporting-file sample。這項結論只適用於已驗證的目標版本與 CLI path；版本、entrypoint 或 source registration 改變時需重查。
+在過往已檢查的 OpenCode fork `c73cc038da91dde71cd432d1386532bdd16b808c`，其 CLI skill path 使用 legacy V1-style skill service：config directory 會掃 `<config>/skill` 與 `<config>/skills`，directory-form skill 以 `**/SKILL.md` 發現，skill invocation 的 supporting-file sample 只掃被載入 skill 自己的 directory。當時的 sibling `skill-reviews/` 因此不屬於該 skill 的 discovery 或 supporting-file sample。這是該 source revision 的歷史檢查結果，不代表目前安裝或後續版本必然維持相同行為；版本、entrypoint 或 source registration 改變時需依實際執行版本重新驗證。
 
 ## 同步規則
 

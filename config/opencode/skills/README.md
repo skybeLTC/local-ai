@@ -4,6 +4,10 @@
 
 共用 skill permission 由 `../opencode.jsonc` 持有。跨多個 skill 的第三方 provenance 與 notice 集中記錄在這裡，不複製進 runtime `SKILL.md`。
 
+## 本地 skills
+
+- [`commit-message/`](commit-message/README.md)：依實際 Git 變更撰寫、檢查與重寫 commit message。
+
 ## Matt Pocock integrations
 
 Upstream: `https://github.com/mattpocock/skills.git`
