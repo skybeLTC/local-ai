@@ -21,7 +21,8 @@
 │   └── opencodeTools
 ├── tools/
 │   └── opencode/
-│       └── opencode-sessions
+│       ├── opencode-sessions
+│       └── opencode-export-session
 ├── config/
 │   └── opencode/
 │       ├── README.md
@@ -50,9 +51,15 @@ Root Git 以 `.gitignore` 排除 `/opencode/`、`/private/` 與 `/opencode-satel
 
 ## Public OpenCode helpers
 
-`bin/opencodeTools` 是公開的 CLI 入口；`tools/opencode/opencode-sessions` 處理通用 session 列表。`opencodeTools --sessions` 與 `--help` 不依賴 private repository。
+`bin/opencodeTools` 是公開的 CLI 入口；`tools/opencode/opencode-sessions` 處理通用 session 列表，`tools/opencode/opencode-export-session` 處理 session 匯出、metadata 過濾與壓縮。`--sessions`、`--export-session` 與 `--help` 不依賴 private repository。
 
 如果同層另有 `private/bin/opencodeTools-private`，且目前的 `OPENCODE_CONFIG` 指向該 private checkout 的 work profile，dispatcher 才載入 private 擴充指令。擴充程式本身負責辨識環境；public 不保存 work 專屬指令清單或內部設定。
+
+執行 `opencodeTools --export-session SESSION_ID`，會在目前目錄建立或覆蓋 `SESSION_ID.json` 與 `SESSION_ID.json.zst`。預設保留 OpenCode JSON 的物件層級、欄位名稱、欄位順序及 message 順序；刪除指定的模型／時間／執行統計、與頂層重複的 `sessionID`、工具 `callID`，以及文字恰為空字串的 reasoning part。其他 parts 的相對順序不變。保留 session／message／part 的 `id`、`parentID`、`messageID` 與 session directory。只有值的類型與內容完全相同時才刪除重複的工具 `title`、`metadata.output`、`metadata.todos`、`metadata.name`；移除 `tool.state.metadata.model`，其餘工具狀態、輸入輸出及附件保留。對已知 message part 的 metadata，只移除模型內部識別與加密資料，保留 `phase`、`compaction_continue`、`anthropic.caller` 與未知資料；工具附件內容及其 metadata 不做遞迴過濾。
+
+使用 `--no-filter` 完全不進行過濾，逐位元組保留 OpenCode 原始 JSON，適合備份或 `opencode import`；預設過濾後的 JSON 不保證能匯入。兩種模式都以 `zstd -19 -T0 -v --rsyncable` 壓縮，並覆蓋同名檔案；產物權限為 `0600`。先在私有暫存目錄完成 JSON 與壓縮驗證，再逐一替換輸出檔；兩檔不是原子交易。預設 JSON 經重新序列化，保留 key／array 順序，但不保證原始空白及縮排。
+
+檔案 URL 可能內含完整 base64 圖片或本機路徑；對話、工具輸出亦可能含有機密資訊。過濾 metadata 不等於去識別化，不可未檢查就加入 Git 或對外分享。依賴 `opencode`、`python3`、`zstd`。
 
 Local runtime entry：`~/.local/bin/opencodeTools -> ~/local-ai/bin/opencodeTools`。切換此 symbolic link 須等兩個 repository 完成整合與驗證後再執行。
 

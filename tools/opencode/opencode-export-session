@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+"""Export OpenCode session JSON, optionally without filtering, and compress with zstd."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+
+
+# Filter only identified execution metadata. Keep unknown metadata and
+# conversation payloads, including tool attachments, unchanged.
+# Retain relation IDs; drop a sessionID only when it repeats top-level info.id.
+# Default mode removes empty-text reasoning parts, never whole messages.
+# --no-filter remains byte-identical to the upstream OpenCode export.
+SESSION_INFO_METADATA = {
+    "slug", "projectID", "workspaceID", "time", "version", "share",
+    "agent", "model", "provider", "modelID", "providerID",
+    "variant", "mode", "summary", "cost", "tokens",
+}
+MESSAGE_INFO_METADATA = {
+    "time", "agent", "model", "provider", "modelID", "providerID",
+    "variant", "mode", "summary", "cost", "tokens",
+}
+PART_METADATA = {
+    "time", "model", "provider", "modelID",
+    "providerID", "variant", "cost", "tokens",
+}
+# Only remove established provider-internal bookkeeping. Preserve phase,
+# compaction markers, tool caller provenance, and future metadata keys.
+PART_PROVIDER_METADATA = {
+    "openai": {"itemId", "reasoningEncryptedContent"},
+    "anthropic": {"signature"},
+}
+TOOL_STATE_METADATA = {
+    "time", "model", "provider", "modelID", "providerID",
+    "variant", "cost", "tokens",
+}
+
+
+def without_keys(value, keys):
+    # Python dict iteration keeps the original JSON member order.
+    return {key: item for key, item in value.items() if key not in keys}
+
+
+def filter_part_metadata(metadata):
+    if not isinstance(metadata, dict):
+        return metadata
+    result = {}
+    for key, value in metadata.items():
+        if key in PART_METADATA:
+            continue
+        if key in PART_PROVIDER_METADATA and isinstance(value, dict):
+            retained = without_keys(value, PART_PROVIDER_METADATA[key])
+            if retained:
+                result[key] = retained
+        else:
+            result[key] = value
+    return result
+
+
+def filter_part(part, session_id):
+    if not isinstance(part, dict):
+        raise ValueError("invalid message part")
+    result = {}
+    for key, value in part.items():
+        if key in PART_METADATA or (key == "sessionID" and value == session_id):
+            continue
+        if key == "callID" and part.get("type") == "tool":
+            # The readable transcript does not use OpenCode's tool-call identifier.
+            continue
+        if key == "metadata" and part.get("type") in ("text", "reasoning", "tool"):
+            # A part's metadata is distinct from the tool execution state's
+            # metadata. Retain meaningful annotations and unknown fields.
+            filtered = filter_part_metadata(value)
+            if filtered or not isinstance(value, dict):
+                result[key] = filtered
+            continue
+        if key == "state" and part.get("type") == "tool" and isinstance(value, dict):
+            state = {}
+            command_input = value.get("input")
+            command = command_input.get("command") if isinstance(command_input, dict) else None
+            for state_key, state_value in value.items():
+                if state_key in TOOL_STATE_METADATA:
+                    continue
+                if state_key == "title" and isinstance(command, str) and state_value == command:
+                    continue
+                if state_key == "metadata" and isinstance(state_value, dict):
+                    # Keep diagnostic results and child-session references.
+                    # Remove the execution model and only byte-for-byte-equivalent
+                    # duplicate input/output values (including their types).
+                    input_value = value.get("input")
+                    metadata = {}
+                    for k, v in state_value.items():
+                        if k == "model":
+                            continue
+                        if k == "output":
+                            original = value.get("output")
+                            duplicate = "output" in value
+                        else:
+                            original = input_value.get(k) if isinstance(input_value, dict) else None
+                            duplicate = k in ("todos", "name") and isinstance(input_value, dict) and k in input_value
+                        if duplicate and type(v) is type(original) and v == original:
+                            continue
+                        metadata[k] = v
+                    state[state_key] = metadata
+                    continue
+                # Tool attachments are payloads, not top-level message parts.
+                # Preserve their data and metadata without recursive filtering.
+                state[state_key] = state_value
+            result[key] = state
+        else:
+            result[key] = value
+    return result
+
+
+def filter_metadata(data):
+    if not isinstance(data, dict) or not isinstance(data.get("info"), dict):
+        raise ValueError("expected OpenCode export: info object is missing")
+    if not isinstance(data.get("messages"), list):
+        raise ValueError("expected OpenCode export: messages array is missing")
+    session_id = data["info"].get("id")
+    result = {}
+    for key, value in data.items():
+        if key == "info":
+            result[key] = without_keys(value, SESSION_INFO_METADATA)
+        elif key == "messages":
+            messages = []
+            for idx, item in enumerate(value):
+                if not isinstance(item, dict) or not isinstance(item.get("info"), dict):
+                    raise ValueError(f"invalid message at index {idx}")
+                if not isinstance(item.get("parts"), list):
+                    raise ValueError(f"missing parts for message at index {idx}")
+                message = {}
+                for name, field in item.items():
+                    if name == "info":
+                        # Same-session ID is already present at top-level info.id.
+                        message[name] = {
+                            k: v for k, v in field.items()
+                            if k not in MESSAGE_INFO_METADATA
+                            and (k != "sessionID" or v != session_id)
+                        }
+                    elif name == "parts":
+                        # Preserve every other part and its relative order.
+                        message[name] = [
+                            filter_part(part, session_id) for part in field
+                            if not (isinstance(part, dict)
+                                    and part.get("type") == "reasoning"
+                                    and part.get("text") == "")
+                        ]
+                    else:
+                        message[name] = field
+                messages.append(message)
+            result[key] = messages
+        else:
+            result[key] = value
+    return result
+
+
+def run(args):
+    if not re.fullmatch(r"ses_[A-Za-z0-9_-]+", args.session_id):
+        raise ValueError("SESSION_ID 格式不正確")
+    for executable in ("opencode", "zstd"):
+        if shutil.which(executable) is None:
+            raise FileNotFoundError(f"找不到 {executable} (不在 PATH 上)")
+
+    directory = Path.cwd()
+    output_json = directory / f"{args.session_id}.json"
+    output_archive = directory / f"{args.session_id}.json.zst"
+    os.umask(0o077)
+    with tempfile.TemporaryDirectory(prefix=".opencode-session-export.", dir=directory) as staging:
+        staging = Path(staging)
+        raw = staging / "raw.json"
+        staged_json = staging / "session.json"
+        staged_archive = staging / "session.json.zst"
+
+        with raw.open("wb") as out:
+            subprocess.run(["opencode", "export", args.session_id], stdout=out, check=True)
+        with raw.open("r", encoding="utf-8") as source:
+            data = json.load(source)
+        if args.no_filter:
+            # Do not filter or reserialize: this mode preserves upstream bytes.
+            if not isinstance(data, dict) or not isinstance(data.get("info"), dict) or not isinstance(data.get("messages"), list):
+                raise ValueError("invalid OpenCode export format")
+            raw.rename(staged_json)
+        else:
+            filtered = filter_metadata(data)
+            with staged_json.open("w", encoding="utf-8") as out:
+                json.dump(filtered, out, ensure_ascii=False, indent=2)
+                out.write("\n")
+
+        with staged_json.open("rb") as content, staged_archive.open("wb") as out:
+            subprocess.run(["zstd", "-19", "-T0", "-v", "--rsyncable"], stdin=content, stdout=out, check=True)
+        if staged_archive.stat().st_size == 0:
+            raise ValueError("zstd produced an empty archive")
+        subprocess.run(["zstd", "-t", "-q", "--", str(staged_archive)], check=True)
+
+        # os.replace overwrites regular files and replaces symlinks themselves.
+        # Never treat a directory (or a link to a directory) as an output file.
+        for target in (output_json, output_archive):
+            if target.is_dir():
+                raise IsADirectoryError(f"輸出路徑是目錄: {target}")
+        os.replace(staged_json, output_json)
+        os.replace(staged_archive, output_archive)
+
+    print(f"PASS: JSON: {output_json}")
+    print(f"PASS: zstd: {output_archive}")
+    print("模式: 未過濾的原始 OpenCode JSON" if args.no_filter else "模式: 原始結構 JSON（已過濾結構性 metadata）")
+
+
+def interrupted(signum, _frame):
+    raise InterruptedError(f"signal {signum}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="opencodeTools --export-session",
+        description="匯出 session JSON 與 .json.zst（預設過濾結構性 metadata，並覆蓋既有輸出）。",
+    )
+    parser.add_argument("session_id", metavar="SESSION_ID")
+    parser.add_argument(
+        "--no-filter", action="store_true",
+        help="不套用任何過濾，逐位元組保留 OpenCode 原始 JSON（適合備份或 opencode import）",
+    )
+    args = parser.parse_args()
+    signal.signal(signal.SIGTERM, interrupted)
+    signal.signal(signal.SIGHUP, interrupted)
+    try:
+        run(args)
+    except (OSError, ValueError, subprocess.CalledProcessError, InterruptedError) as exc:
+        print(f"FAIL: session export: {exc}", file=sys.stderr)
+        return 1
+    except KeyboardInterrupt:
+        print("FAIL: session export: interrupted", file=sys.stderr)
+        return 130
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

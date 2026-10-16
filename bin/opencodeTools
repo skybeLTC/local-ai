@@ -6,6 +6,7 @@ set -euo pipefail
 SELF="$(readlink -f -- "${BASH_SOURCE[0]}")"
 ROOT="$(cd -- "$(dirname -- "$SELF")/.." && pwd)"
 SESSIONS="$ROOT/tools/opencode/opencode-sessions"
+EXPORT_SESSION="$ROOT/tools/opencode/opencode-export-session"
 PRIVATE="$ROOT/private/bin/opencodeTools-private"
 
 private_available() {
@@ -22,6 +23,8 @@ usage() {
   cat >&2 <<'USAGE'
   opencodeTools --sessions [-n N | --max-count N]
                                    列頂層、未封存 session，使用 terminal display width 對齊
+  opencodeTools --export-session SESSION_ID [--no-filter]
+                                   匯出 JSON 與 zstd 壓縮檔；預設過濾，--no-filter 保留原始資料
   opencodeTools --help | -h
                                    顯示這個說明
 USAGE
@@ -37,6 +40,10 @@ case "$cmd" in
   --sessions)
     [[ -x "$SESSIONS" ]] || { printf '找不到或不可執行:%s\n' "$SESSIONS" >&2; exit 127; }
     exec "$SESSIONS" "$@"
+    ;;
+  --export-session)
+    [[ -x "$EXPORT_SESSION" ]] || { printf '找不到或不可執行:%s\n' "$EXPORT_SESSION" >&2; exit 127; }
+    exec "$EXPORT_SESSION" "$@"
     ;;
   -h|--help)
     usage
