@@ -17,6 +17,11 @@
 ~/local-ai/
 ├── README.md
 ├── AGENTS.md
+├── bin/
+│   └── opencodeTools
+├── tools/
+│   └── opencode/
+│       └── opencode-sessions
 ├── config/
 │   └── opencode/
 │       ├── README.md
@@ -42,6 +47,14 @@ Root Git 以 `.gitignore` 排除 `/opencode/`、`/private/` 與 `/opencode-satel
 - `opencode-satellites/`：OpenCode 周邊工具的 source checkout 集合。Root repository 只擁有 `opencode-satellites/README.md` 描述的 layout invariant 與 ignore rule；每個子目錄都是獨立 Git repository，其 branch、build、release 與 publication policy 由該 repository 自己負責。
 - `opencode/`：OpenCode source/release maintenance repository。Source fork 的 branch、build、release 與 publication policy 不由這個 root repository 管理。
 - `private/`：machine-specific provider/model profile 與其他不公開設定。Public repository 只描述它的 interface，不記錄實際 private mapping。
+
+## Public OpenCode helpers
+
+`bin/opencodeTools` 是公開的 CLI 入口；`tools/opencode/opencode-sessions` 處理通用 session 列表。`opencodeTools --sessions` 與 `--help` 不依賴 private repository。
+
+如果同層另有 `private/bin/opencodeTools-private`，且目前的 `OPENCODE_CONFIG` 指向該 private checkout 的 work profile，dispatcher 才載入 private 擴充指令。擴充程式本身負責辨識環境；public 不保存 work 專屬指令清單或內部設定。
+
+Local runtime entry：`~/.local/bin/opencodeTools -> ~/local-ai/bin/opencodeTools`。切換此 symbolic link 須等兩個 repository 完成整合與驗證後再執行。
 
 ## Runtime layout
 

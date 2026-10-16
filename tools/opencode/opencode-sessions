@@ -1,0 +1,214 @@
+#!/usr/bin/env bash
+# List top-level (non-child), non-archived opencode sessions straight from the
+# opencode sqlite db (via `opencode db ... --format json`).
+#
+# Column width/padding here is based on TERMINAL DISPLAY WIDTH (Unicode
+# East_Asian_Width: CJK/fullwidth characters = 2 columns, everything else =
+# 1), NOT on opencode's own `session list` algorithm, which pads by JS
+# String.length (UTF-16 code units). That under-counts every "wide" CJK
+# character by 1 column, so in a real terminal the real `session list`
+# visibly misaligns the Updated column once titles mix different amounts of
+# CJK text (confirmed against real session data: titles with more Chinese
+# characters drift the Updated column further left). This is a DELIBERATE
+# divergence from opencode's own formatter, chosen so columns actually line
+# up when rendered — it is not trying to be a byte-for-byte clone of
+# `session list`'s output.
+#
+# Known residual gap, precisely (verified directly, not just "slightly
+# under-pad"): char_width() sums PER CODE POINT and has no concept of
+# grapheme clusters, so multi-code-point emoji sequences can come out either
+# over- or under-counted, sometimes only "right" by coincidence:
+#   - skin-tone-modified emoji (e.g. thumbs-up + Fitzpatrick modifier):
+#     OVER-counted (4 columns computed vs. 2 actually rendered — both parts
+#     are individually East_Asian_Width=W, but the terminal shows one 2-wide
+#     glyph, not two).
+#   - ZWJ sequences (e.g. the 4-person "family" emoji, 4 emoji joined by 3
+#     ZWJ): OVER-counted badly (8 vs. 2 — every joined emoji still counts
+#     full width even though the terminal renders the whole sequence as one
+#     glyph).
+#   - base char + variation-selector-16 (e.g. "coffee" turned into its emoji
+#     presentation): can go either way. VS16 itself is East_Asian_Width=
+#     Ambiguous (counted as 1 here, though it draws nothing), so a base char
+#     that's already W (coffee) gets OVER-counted by 1; a base char that's
+#     Neutral (heart) gets the right total (2) only by two wrong numbers
+#     canceling out, not because either is actually correct.
+#   - paired regional-indicator flags (e.g. Taiwan, 2 code points): each
+#     indicator is Neutral (1 each) and happens to sum to the flag's real
+#     2-column width — again coincidence, not a rule this code understands.
+# A correct fix needs grapheme-cluster segmentation plus a curated
+# emoji-sequence width table (what dedicated wcwidth-style libraries ship),
+# not a simple per-code-point patch — tried adding VS16 as a zero-width
+# exception and it fixed the coffee case but broke the (previously
+# accidentally-correct) heart case, so no such patch is included here.
+# Out of scope for now since real session titles seen so far are plain
+# CJK/ASCII with none of the above.
+#
+# The Updated column TEXT is a custom fixed-width format (per explicit
+# request), not an attempt to resemble opencode's own locale-dependent
+# toLocaleTimeString()/toLocaleDateString() rendering at all: 24-hour
+# zero-padded "HH:MM" for today, else "HH:MM · YYMMDD" (2-digit year, no
+# separators) — e.g. "14:11 · 260723" for 2:11 PM on 2026-07-23. Both forms
+# are fixed-length (5 and 14 chars), which is what lets the separator line
+# below be computed to always cover the widest possible Updated value, not
+# just the "Updated" header label.
+#
+# Unlike `opencode session list`, this hits the db directly (no session-
+# loading, no TTY pager spawn), so it works from any directory and stays
+# script-friendly.
+#
+# `opencode db`'s JSON output is streamed through a temp file, never through a
+# shell/env-var string: Linux caps any single argv/envp string passed to
+# execve(2) at MAX_ARG_STRLEN (32 pages, ~128KiB). A big enough session list
+# handed to a child process via an env var would fail with E2BIG ("Argument
+# list too long"); a temp file has no such cap.
+#
+# Invoke via:
+#   opencodeTools --sessions                 全部 session,最新在前
+#   opencodeTools --sessions -n 20            只列最新 20 筆(正整數,>=1)
+#   opencodeTools --sessions --max-count 20   同上
+set -euo pipefail
+
+PY="$(command -v python3 || true)"
+[ -n "$PY" ] || { echo "找不到 python3" >&2; exit 1; }
+OC="$(command -v opencode || true)"
+[ -n "$OC" ] || { echo "找不到 opencode(不在 PATH 上)" >&2; exit 1; }
+
+limit=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -n|--max-count)
+      [ "$#" -ge 2 ] || { echo "opencode-sessions: $1 需要接一個數字" >&2; exit 2; }
+      limit="$2"
+      [ -n "$limit" ] || { echo "opencode-sessions: $1 不能接空字串" >&2; exit 2; }
+      shift 2 ;;
+    --max-count=*)
+      limit="${1#*=}"
+      [ -n "$limit" ] || { echo "opencode-sessions: --max-count= 需要接一個數字" >&2; exit 2; }
+      shift ;;
+    -*) echo "opencode-sessions: 未知選項 $1" >&2; exit 2 ;;
+    *)  echo "opencode-sessions: 多餘的參數 $1" >&2; exit 2 ;;
+  esac
+done
+case "$limit" in
+  "") ;;
+  *[!0-9]*) echo "opencode-sessions: -n/--max-count 需要正整數,收到:$limit" >&2; exit 2 ;;
+esac
+# String-length guard BEFORE any arithmetic: bash's `[ -lt ]` does fixed-width
+# (64-bit) integer eval, so a value with too many digits (e.g. a 20-digit
+# number) overflows it, and `[ ]` fails with its own "integer expression
+# expected" error instead of comparing — which `if` would just read as
+# "false", silently letting an absurd value through to the SQL LIMIT clause.
+# 15 digits (~10^15) is nowhere near a real session count and stays safely
+# inside 64-bit range.
+if [ -n "$limit" ] && [ "${#limit}" -gt 15 ]; then
+  echo "opencode-sessions: -n/--max-count 數字太大,收到:$limit" >&2
+  exit 2
+fi
+if [ -n "$limit" ] && [ "$limit" -lt 1 ]; then
+  echo "opencode-sessions: -n/--max-count 需要正整數(>=1),收到:$limit" >&2
+  exit 2
+fi
+
+QUERY="SELECT id, title, time_updated FROM session WHERE parent_id IS NULL AND time_archived IS NULL ORDER BY time_updated DESC"
+[ -n "$limit" ] && QUERY="$QUERY LIMIT $limit"
+
+tmp="$(mktemp "${TMPDIR:-/tmp}/opencode-sessions.XXXXXX")"
+trap 'rm -f "$tmp"' EXIT
+
+if ! "$OC" db "$QUERY" --format json > "$tmp"; then
+  echo "opencode-sessions: 查詢失敗(opencode db 執行失敗)" >&2
+  exit 1
+fi
+
+"$PY" - "$tmp" <<'PY'
+import json
+import sys
+import unicodedata
+from datetime import datetime
+
+path = sys.argv[1]
+try:
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    rows = [
+        (str(row["id"]), str(row["title"]), int(row["time_updated"]))
+        for row in data
+    ]
+except (json.JSONDecodeError, TypeError, KeyError, ValueError) as e:
+    print(f"opencode-sessions: 解析 db 回傳資料失敗({e})", file=sys.stderr)
+    sys.exit(1)
+
+if not rows:
+    print("(沒有符合的 session)", file=sys.stderr)
+    sys.exit(0)
+
+# Keep each session on one physical terminal row. Escape only layout-changing
+# title controls; emoji/grapheme width handling remains intentionally out of scope.
+def visible_title(title):
+    return title.translate({ord("\t"): r"\t", ord("\r"): r"\r", ord("\n"): r"\n"})
+
+rows = [(sid, visible_title(title), updated) for sid, title, updated in rows]
+
+# See the file header comment: width/padding is TERMINAL DISPLAY WIDTH
+# (Unicode East_Asian_Width-aware), not character/UTF-16-unit count, so
+# columns actually line up in a real terminal for mixed CJK/ASCII titles.
+def char_width(ch):
+    if unicodedata.combining(ch):
+        return 0
+    if ord(ch) in (0x200B, 0x200C, 0x200D, 0x200E, 0x200F, 0xFEFF):
+        return 0  # ZWSP, ZWNJ/ZWJ/LRM/RLM, BOM/ZWNBSP
+    return 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+
+def display_width(s):
+    return sum(char_width(ch) for ch in s)
+
+def pad_end(s, width):
+    return s + " " * max(0, width - display_width(s))
+
+def clock(ms):
+    dt = datetime.fromtimestamp(ms / 1000)
+    return f"{dt.hour:02d}:{dt.minute:02d}"  # 24h, zero-padded -> always 5 chars
+
+def today_time_or_datetime(ms):
+    dt = datetime.fromtimestamp(ms / 1000)
+    now = datetime.now()
+    if (dt.year, dt.month, dt.day) == (now.year, now.month, now.day):
+        return clock(ms)
+    yymmdd = f"{dt.year % 100:02d}{dt.month:02d}{dt.day:02d}"
+    return f"{clock(ms)} \u00b7 {yymmdd}"  # always 14 chars
+
+def truncate(s, n):
+    if display_width(s) <= n:
+        return s
+    # Currently a no-op in practice: C is always max(25, max(display_width
+    # (title)) over these same rows), so no title's display_width() can
+    # exceed C — this branch never runs in the deployed tool today. Kept
+    # correct anyway: walks whole code points so it never cuts a wide
+    # character in half.
+    out = []
+    width = 0
+    budget = n - 1
+    for ch in s:
+        w = char_width(ch)
+        if width + w > budget:
+            break
+        out.append(ch)
+        width += w
+    return "".join(out) + "\u2026"
+
+F = max(20, max(len(r[0]) for r in rows))  # Session ID: plain-ASCII ids, len() is fine
+C = max(25, max(display_width(r[1]) for r in rows))  # Title column width, terminal columns
+updated_texts = [today_time_or_datetime(r[2]) for r in rows]  # ASCII-only, len() is fine
+U = max(len(u) for u in updated_texts)  # widest Updated value (14 if any row isn't "today")
+
+header_line = "Session ID" + " " * (F - 10) + "  " + "Title" + " " * (C - 5) + "  " + "Updated"
+# Separator covers whichever is wider: the header labels, or an actual data
+# row (Updated is variable-length per row -- 5 chars for "today", 14 for a
+# dated entry -- so a row can run past the header's "Updated" label).
+sep_len = max(len(header_line), F + 2 + C + 2 + U)
+print(header_line)
+print("\u2500" * sep_len)
+for (sid, title, _updated), utext in zip(rows, updated_texts):
+    t = truncate(title, C)
+    print(f"{sid.ljust(F)}  {pad_end(t, C)}  {utext}")
+PY

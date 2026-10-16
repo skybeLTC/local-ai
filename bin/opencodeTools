@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Public OpenCode helper dispatcher. Private commands are provided by an
+# optional, environment-gated extension and are never enumerated here.
+set -euo pipefail
+
+SELF="$(readlink -f -- "${BASH_SOURCE[0]}")"
+ROOT="$(cd -- "$(dirname -- "$SELF")/.." && pwd)"
+SESSIONS="$ROOT/tools/opencode/opencode-sessions"
+PRIVATE="$ROOT/private/bin/opencodeTools-private"
+
+private_available() {
+  [[ -x "$PRIVATE" ]] && "$PRIVATE" --available >/dev/null 2>&1
+}
+
+usage() {
+  printf 'opencodeTools — OpenCode 輔助工具集\n\n用法:\n' >&2
+  local private_enabled=0
+  if private_available; then
+    private_enabled=1
+    "$PRIVATE" --usage >&2
+  fi
+  cat >&2 <<'USAGE'
+  opencodeTools --sessions [-n N | --max-count N]
+                                   列頂層、未封存 session，使用 terminal display width 對齊
+  opencodeTools --help | -h
+                                   顯示這個說明
+USAGE
+  if (( private_enabled )); then
+    "$PRIVATE" --usage-notes >&2
+  fi
+}
+
+cmd="${1:-}"
+if (( $# > 0 )); then shift; fi
+
+case "$cmd" in
+  --sessions)
+    [[ -x "$SESSIONS" ]] || { printf '找不到或不可執行:%s\n' "$SESSIONS" >&2; exit 127; }
+    exec "$SESSIONS" "$@"
+    ;;
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  '')
+    usage
+    exit 1
+    ;;
+  *)
+    if private_available && "$PRIVATE" --supports "$cmd" >/dev/null 2>&1; then
+      exec "$PRIVATE" "$cmd" "$@"
+    fi
+    printf '未知選項:%s\n\n' "$cmd" >&2
+    usage
+    exit 2
+    ;;
+esac
