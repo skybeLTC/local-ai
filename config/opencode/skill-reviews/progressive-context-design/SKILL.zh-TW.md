@@ -40,7 +40,7 @@ description: "建立、修改、review 或重整 durable textual / instructional
 - 不依檔名或目錄模板強制建立 README、AGENTS、reference 或中介層。只有新的適用範圍、讀取時點、維護責任或導航價值成立時才建立新資訊單位。
 - Local information 優先留在 natural owner。若一個演算法 invariant 已由鄰近 source comment 充分承擔，而且沒有更高層 runtime、navigation 或 maintenance dependency，就不要再向 README、AGENTS 或其他上層複製。
 - `AGENTS.md`、`SKILL.md` 或其他 runtime instruction owner 只在接收平台實際賦予其載入角色時，持有該 scope 執行時 mandatory 的最低規則、門檻、停止條件與 loading trigger。檔名本身不會創造權威。
-- `README.md` 負責用途、深入理由、架構、生命週期、維護與一般導覽。README 與執行入口可以共存，但 README 不能成為 mandatory runtime rule 的唯一 owner。
+- `README.md` 負責用途、深入理由、架構、生命週期、說明性維護指引與一般導覽。AI 在維護 artifact 時必須遵守的規則，應由適用且保證可達的執行入口持有；README 可以導向該權威，但不能是這些規則的唯一 owner。
 - Derived mirror 或 generated copy 可以存在，但必須有一份明確 authoritative source、可追溯同步關係，且接收 runtime 不能把 mirror 誤當第二份權威。
 - 歷史與證據不能取代現行規則。後續讀者不應被迫 replay 全部 history 才能知道現況。
 

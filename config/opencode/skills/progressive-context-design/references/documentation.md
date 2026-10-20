@@ -14,7 +14,7 @@ A durable document should let a reader determine its scope, what is current/auth
 
 ## README and guides
 
-README is suitable for purpose, architecture overview, lifecycle, maintenance, rationale, and general navigation. It may reference runtime instruction owners, but it must not be a forwarding-only substitute for mandatory policy.
+README is suitable for purpose, architecture overview, lifecycle, explanatory maintenance guidance, rationale, and general navigation. It may reference runtime instruction owners, but it must not be a forwarding-only substitute for mandatory policy.
 
 Keep one understandable or executable topic per document unit. Split only for meaningful differences in scope, loading time, or maintenance responsibility; do not split sentence-by-sentence or force tightly coupled procedure steps across many files.
 

@@ -20,7 +20,7 @@
 | 同一專案跨任務都適用的新增 invariant | project-level instruction owner |
 | 完成特定 task 的方法 | task skill 的執行入口與 conditional references |
 | 某 subtree 修改時 mandatory 的 local invariant | 接收平台能保證載入的最窄 local instruction owner |
-| 用途、設計理由、生命週期、維護或一般導航 | README 或對應 guide |
+| 用途、設計理由、生命週期、說明性維護指引或一般導航 | README 或對應 guide |
 | 單一設定值、局部行為、演算法 invariant 的鄰近理由 | source/config comment 或局部文件 |
 | 過去變更、決策或狀態 | 對應 durable history owner |
 | 支持特定版本或驗證結果的觀察 | evidence artifact，保留版本與來源 |

@@ -37,7 +37,7 @@ Give a person or AI the smallest context needed to choose the correct next step,
 - Do not create README, AGENTS, reference, or intermediate layers merely because a directory template suggests them. Create an information unit only when a distinct scope, loading time, maintenance responsibility, mandatory loading need, or navigation value exists.
 - Keep local information local. If a source comment fully owns an implementation invariant and no runtime, navigation, or maintenance dependency exists above it, do not duplicate it upward.
 - `AGENTS.md`, `SKILL.md`, or another runtime instruction owner has authority only when the receiving runtime actually gives it that loading role. A filename alone does not create authority.
-- `README.md` owns purpose, deeper rationale, architecture, lifecycle, maintenance, and general navigation. It may coexist with runtime instructions, but it must not be the only owner of mandatory runtime behavior.
+- `README.md` owns purpose, deeper rationale, architecture, lifecycle, explanatory maintenance guidance, and general navigation. Mandatory AI-facing maintenance instructions belong in an applicable guaranteed runtime entry; README may point to that owner but must not be their sole owner.
 - Derived mirrors or generated copies are allowed only with one explicit authoritative source, traceable synchronization, and a runtime structure that cannot mistake the mirror for a second authority.
 - History and evidence do not replace current rules. A later reader should not have to replay all history to reconstruct current behavior.
 

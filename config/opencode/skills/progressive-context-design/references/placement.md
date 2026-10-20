@@ -18,7 +18,7 @@ Typical owners include:
 | New invariant shared across tasks in one project | project-level instruction owner |
 | Method for one task class | task skill runtime entry plus conditional references |
 | Mandatory invariant when modifying one subtree | narrowest local instruction owner the receiving platform can guarantee to load |
-| Purpose, rationale, lifecycle, maintenance, general navigation | README or guide |
+| Purpose, rationale, lifecycle, explanatory maintenance guidance, general navigation | README or guide |
 | Rationale for one setting, local behavior, or algorithm invariant | nearby source/config comment or local document |
 | Past decisions, changes, states | durable history owner |
 | Observation supporting one version or validation state | evidence artifact with version/source |

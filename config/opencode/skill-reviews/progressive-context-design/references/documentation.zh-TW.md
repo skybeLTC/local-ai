@@ -23,7 +23,7 @@ Root-level 文件聚焦整體目的、scope、主要責任與自然入口。Subs
 
 ## README 與 guide
 
-README 適合用途、主要 architecture、lifecycle、maintenance、rationale 與 general navigation。它可以引用 runtime instruction owner，但不能作為 mandatory policy 的 forwarding-only substitute。
+README 適合用途、主要 architecture、lifecycle、說明性維護指引、rationale 與 general navigation。它可以引用 runtime instruction owner，但不能作為 mandatory policy 的 forwarding-only substitute。
 
 一個文件單位處理一個可理解或可執行主題。只有 scope、讀取時點或維護責任不同時才拆分；不要逐句拆檔，也不要把互相高度耦合的步驟拆到讀者必須反覆跳轉。
 
