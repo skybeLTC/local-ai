@@ -1,6 +1,6 @@
 ---
 name: progressive-context-design
-description: "建立、修改、review 或重整 durable textual / instructional artifacts 時使用，包含 prompts、skills、README、AGENTS instructions、guides、runbooks、design docs、repository navigation、history，以及其他後續人員或 AI 會依賴的持久文字。設計單一權威、natural owner、progressive loading、reference triggers、guaranteed reachability、hierarchy rebalance、change-impact propagation、current/history separation 與 information-boundary handling。不以本 skill 作為 software correctness、software architecture、test design 或 commit-message authoring 的權威。"
+description: "建立、修改、review 或重整 durable textual / instructional artifacts 時使用，包含 prompts、skills、README、AGENTS instructions、guides、runbooks、design docs、repository navigation、history，以及其他後續人員或 AI 會依賴的持久文字。提交包含這類產物變更的 Git commit 前，也用本 skill 檢查資訊架構。設計單一權威、natural owner、progressive loading、reference triggers、guaranteed reachability、hierarchy rebalance、change-impact propagation、current/history separation 與 information-boundary handling。不以本 skill 作為 software correctness、software architecture、test design、Git commit execution 或 commit-message authoring 的權威。"
 ---
 
 # 漸進式 Context 設計
@@ -30,6 +30,7 @@ description: "建立、修改、review 或重整 durable textual / instructional
 - 分開辨識目前執行平台、產物接收平台、產物類型、實際載入方式與權威來源。為另一平台撰寫內容，不代表目前擁有該平台或使用者機器的存取能力。
 - 沿用已確立的目標、語言、適用範圍與授權。Review 不授權修改；資訊架構工作也不授權改變程式、API、設定值、測試策略或其他工程決策。
 - 只要任務建立、修改或 review durable textual / instructional artifact，就先套用本 skill 的資訊架構檢查。Artifact 很短、位於 source code 內或只改少量文字，不代表可以跳過；若 natural owner 已正確、沒有更高層依賴，就在該處 progressive stop。
+- 提交包含 durable textual / instructional artifact 變更的 Git commit 前，必須確認本次變更已依本 skill 完成適用的資訊架構檢查。既有 review 證據若仍適用於即將提交的內容，就沿用並核對，不重做相同檢查。本檢查不授權 commit，也不取代 commit-message、工程或測試驗證。
 - 語言與格式依目標已有的權威規則；本 skill 不建立跨平台語言政策。
 - 任務同時包含資訊架構與工程、skill authoring、commit-message authoring 或其他專門方法時，讓各方法持有自己的單一責任。只有責任界線尚未由使用者或較高權威指令明確決定，而且釐清界線會實質改變判斷或可修改範圍時，才讀取 `references/scope-boundaries.zh-TW.md`；不能只因產物位於 source code 或任務提到另一個領域就讀取。
 - 主要任務若只是撰寫、重寫或 review commit message 的格式與措辭，不由本 skill 主導。只有 commit/history 的資訊層級、導航與 current/history 分工屬於本 skill。
